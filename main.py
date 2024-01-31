@@ -1,8 +1,10 @@
 import argparse
 import json
 import random
+import sys
 from pathlib import Path
 from typing import List, Dict
+from tkinter import filedialog
 
 
 class Vocabulary:
@@ -109,10 +111,18 @@ class Vocabularies:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--file")
+    parser.add_argument("-f", "--file", required=False)
     args = parser.parse_args()
 
-    vocabulary_path = Path(args.file)
+    if args.file:
+        path = args.file
+    else:
+        path = filedialog.askopenfilename(filetypes=[("JSON File", "*.json"), ("VOCABULARY File", "*.vocabularies")])
+        if not path:
+            print("No File selected")
+            sys.exit()
+
+    vocabulary_path = Path(path)
 
     vocabulary_list = []
     with open(vocabulary_path, encoding="utf-8") as file:
