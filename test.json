@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {
+      "word": [
+        "Katze",
+        "Kater"
+      ],
+      "translation": [
+        "cat"
+      ],
+      "example": {
+        "source": "Ich mag die Katze",
+        "target": "I like the cat"
+      }
+    }
+  ]
+}
