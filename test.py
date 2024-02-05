@@ -32,5 +32,3 @@ while True:
         })
         file.seek(0)
         json.dump(current_data, file, indent=2)
-        # file.append(json.dumps(current_data))
-        # json.dump(current_data, file)
