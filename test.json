@@ -12,6 +12,55 @@
         "source": "Ich mag die Katze",
         "target": "I like the cat"
       }
+    },
+    {
+      "word": [
+        "Hund",
+        "H\u00fcndin"
+      ],
+      "translation": [
+        "dog"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Haus"
+      ],
+      "translation": [
+        "house"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Stadt"
+      ],
+      "translation": [
+        "city"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Dorf"
+      ],
+      "translation": [
+        "village"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
     }
   ]
 }

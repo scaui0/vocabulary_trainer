@@ -5,7 +5,7 @@ path = "test.json"
 while True:
     names = []
     while True:
-        if name := input("Name: "):
+        if name := input("Source name: "):
             names.append(name)
         else:
             break
@@ -30,7 +30,6 @@ while True:
                 "target": target_example
             }
         })
-        print(current_data)
         file.seek(0)
         json.dump(current_data, file, indent=2)
         # file.append(json.dumps(current_data))
