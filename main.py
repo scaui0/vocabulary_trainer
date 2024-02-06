@@ -1,10 +1,13 @@
-import argparse
 import json
 import random
 import sys
 from pathlib import Path
 from typing import List, Dict
-from tkinter import filedialog
+
+import new_vocabulary_list
+
+class ExitMessage(BaseException):
+    pass
 
 
 class Vocabulary:
@@ -109,21 +112,25 @@ class Vocabularies:
             return 0, 0, 0
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--file", required=False)
-    args = parser.parse_args()
+def get_path():
+    # filedialog.askopenfilename(
+    #         filetypes=[("JSON File", "*.json"), ("VOCABULARY File", "*.vocabularies")])
+    raw_path = input_with_exit("Path (absolut): ")
+    if not raw_path:
+        print("No file selected")
+        sys.exit()
+    # print(f"Path is {Path(raw_path).absolute()}")
+    return Path(raw_path)
 
-    if args.file:
-        path = args.file
-    else:
-        path = filedialog.askopenfilename(filetypes=[("JSON File", "*.json"), ("VOCABULARY File", "*.vocabularies")])
-        if not path:
-            print("No File selected")
-            sys.exit()
 
-    vocabulary_path = Path(path)
+def input_with_exit(prompt=""):
+    text = input(prompt)
+    if text == "%exit%":
+        raise ExitMessage
+    return text
 
+
+def ask_vocabularies(vocabulary_path):
     vocabulary_list = []
     with open(vocabulary_path, encoding="utf-8") as file:
         for json_data in json.load(file)["entries"]:
@@ -132,7 +139,7 @@ def main():
     vocabularies = Vocabularies(vocabulary_list, False)
     while True:
         vocabulary = vocabularies.get_new_vocabulary()
-        name = input(f"Other name of {vocabulary.name}: ")
+        name = input_with_exit(f"Other name of {vocabulary.name}: ")
         if name in ["exit", "stats"]:
             states = vocabularies.get_state()
             print(f"Your states:\n\tTotal: {states[0]}/{states[1]} ({states[2]}%)")
@@ -147,6 +154,86 @@ def main():
                   f"{vocabulary.tries_right}/{vocabulary.tries}",
                   f"It would be {vocabulary.translations}" if not is_right else ""
                   )
+
+
+def new_vocabulary_list():
+    path = get_path()
+
+    if not path.exists():
+        if input_with_exit("Do you want to create this file? (y=Yes, n=No) ").lower() == "y":
+            with open(path, "w") as file:
+                json.dump(dict(entries=[""]), file)
+
+    while True:
+        names = []
+        while True:
+            if name := input_with_exit("Source name: "):
+                names.append(name)
+            else:
+                break
+
+        translations = []
+        while True:
+            if name := input_with_exit("Translation: "):
+                translations.append(name)
+            else:
+                break
+
+        source_example = input_with_exit("Source example: ")
+        target_example = input_with_exit("Translation example: ")
+
+        with open(path, "r+") as file:
+            current_data = json.load(file)
+            current_data["entries"].append({
+                "word": names,
+                "translation": translations,
+                "example": {
+                    "source": source_example,
+                    "target": target_example
+                }
+            })
+            file.seek(0)
+            json.dump(current_data, file, indent=2)
+
+
+TUTORIAL_TEXT = """
+When you start this application, you will be asked what you want to do.
+You must make a selection from the following to continue. 
+
+o = open vocabulary file
+n = new vocabulary file
+t = Show this tutorial
+c = Cancel
+
+If you need to enter information, you can enter %exit% to exit
+
+Important information:
+Your statistics will not be saved!
+"""
+
+EXIT_MESSAGE = "Thanks for using"
+
+
+def main():
+    try:
+        while True:
+            print("""
+            c = cancel,
+            n = new vocabulary list
+            o = open vocabulary list
+            t = tutorial
+            """)
+            activity = input_with_exit("What want you to do? ").lower()
+            if activity == "c":
+                raise ExitMessage
+            elif activity == "n":
+                new_vocabulary_list()
+            elif activity == "o":
+                ask_vocabularies(get_path())
+            elif activity == "t":
+                print(TUTORIAL_TEXT)
+    except ExitMessage:
+        print(EXIT_MESSAGE)
 
 
 if __name__ == '__main__':
