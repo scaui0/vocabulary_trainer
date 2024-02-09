@@ -4,9 +4,12 @@ import sys
 from pathlib import Path
 from typing import List, Dict
 
-import new_vocabulary_list
 
 class ExitMessage(BaseException):
+    pass
+
+
+class GoToMainMenuMessage(BaseException):
     pass
 
 
@@ -127,6 +130,8 @@ def input_with_exit(prompt=""):
     text = input(prompt)
     if text == "%exit%":
         raise ExitMessage
+    elif text == "%main%":
+        raise GoToMainMenuMessage
     return text
 
 
@@ -136,15 +141,13 @@ def ask_vocabularies(vocabulary_path):
         for json_data in json.load(file)["entries"]:
             vocabulary_list.append(Vocabulary.from_json(json_data))
 
-    vocabularies = Vocabularies(vocabulary_list, False)
+    vocabularies = Vocabularies(vocabulary_list, True)
     while True:
         vocabulary = vocabularies.get_new_vocabulary()
         name = input_with_exit(f"Other name of {vocabulary.name}: ")
-        if name in ["exit", "stats"]:
+        if name in ["stats"]:
             states = vocabularies.get_state()
             print(f"Your states:\n\tTotal: {states[0]}/{states[1]} ({states[2]}%)")
-            if name == "exit":
-                break
         elif name == "skip":
             print(f"It would be {vocabulary.translations}")
             continue
@@ -206,6 +209,10 @@ t = Show this tutorial
 c = Cancel
 
 If you need to enter information, you can enter %exit% to exit
+or %main% to go into main menu
+
+During the requests you can type "stats" to see your statistics
+
 
 Important information:
 Your statistics will not be saved!
@@ -213,17 +220,19 @@ Your statistics will not be saved!
 
 EXIT_MESSAGE = "Thanks for using"
 
+MAIN_PROMPT = """
+o = open vocabulary file
+n = new vocabulary file
+t = Show this tutorial
+c = Cancel
+"""
+
 
 def main():
-    try:
-        while True:
-            print("""
-            c = cancel,
-            n = new vocabulary list
-            o = open vocabulary list
-            t = tutorial
-            """)
-            activity = input_with_exit("What want you to do? ").lower()
+    while True:
+        try:
+            print(MAIN_PROMPT)
+            activity = input_with_exit("What do you want to do? ").lower()
             if activity == "c":
                 raise ExitMessage
             elif activity == "n":
@@ -232,8 +241,11 @@ def main():
                 ask_vocabularies(get_path())
             elif activity == "t":
                 print(TUTORIAL_TEXT)
-    except ExitMessage:
-        print(EXIT_MESSAGE)
+        except GoToMainMenuMessage:
+            continue
+        except ExitMessage:
+            print(EXIT_MESSAGE)
+            sys.exit()
 
 
 if __name__ == '__main__':

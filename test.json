@@ -43,7 +43,8 @@
         "Stadt"
       ],
       "translation": [
-        "city"
+        "city",
+        "town"
       ],
       "example": {
         "source": "",
@@ -56,6 +57,18 @@
       ],
       "translation": [
         "village"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "hallo"
+      ],
+      "translation": [
+        "hello"
       ],
       "example": {
         "source": "",
