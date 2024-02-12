@@ -4,6 +4,12 @@ import sys
 from pathlib import Path
 from typing import List, Dict
 
+from translator import MultipleLanguageTranslator
+
+translator = MultipleLanguageTranslator(Path("translations"))
+translator.install("de")
+_ = translator.translate
+
 
 class ExitMessage(BaseException):
     pass
@@ -23,7 +29,7 @@ class Vocabulary:
         self.source_example = source_example
         self.target_example = target_example
         self.quote = 50
-        self._tries = 0
+        self.tries = 0
         self.tries_right = 0
         self.tries_false = 0
         self.current_question_direction = self.FORWARD_DIRECTION
@@ -33,20 +39,13 @@ class Vocabulary:
         example_data = json_data["example"]
         return cls(json_data["word"], json_data["translation"], example_data["source"], example_data["target"])
 
-    @property
-    def tries(self):
-        return self._tries
-
-    @tries.setter
-    def tries(self, value):
-        self._tries = value
-        self.quote = 100 / (self.tries + 1) * (self.tries_right + 1 / (self.tries_false + 2))
-
     def next_try(self, input_name: str):
         if self.current_question_direction == self.FORWARD_DIRECTION:
             correct = (input_name in self.translations)
-        else:
+        elif self.current_question_direction == self.BACKWARDS_DIRECTION:
             correct = (input_name in self.sources)
+        else:
+            raise OSError(f"self.direction is invalid. It is {self.current_question_direction}\n{self!r}")
 
         if correct:
             self.tries_right += 1
@@ -54,6 +53,10 @@ class Vocabulary:
             self.tries_false += 1
 
         self.tries = self.tries_right + self.tries_false
+        try:
+            self.quote = 100 * ((self.tries + 1) / (self.tries_right + 1))
+        except ZeroDivisionError:
+            self.quote = 0
         return correct
 
     def set_random_direction(self):
@@ -63,8 +66,10 @@ class Vocabulary:
     def name(self) -> str:
         if self.current_question_direction == self.FORWARD_DIRECTION:
             return random.choice(self.sources)
-        else:
+        elif self.current_question_direction == self.BACKWARDS_DIRECTION:
             return random.choice(self.translations)
+        else:
+            print(_("trainer.vocabulary.error.directions"))
 
     def __repr__(self):
         return (f"{self.__class__.__name__}: "
@@ -118,9 +123,9 @@ class Vocabularies:
 def get_path():
     # filedialog.askopenfilename(
     #         filetypes=[("JSON File", "*.json"), ("VOCABULARY File", "*.vocabularies")])
-    raw_path = input_with_exit("Path (absolut): ")
+    raw_path = input_with_exit(_("trainer.path.get_path"))
     if not raw_path:
-        print("No file selected")
+        print(_("trainer.path.no_selected"))
         sys.exit()
     # print(f"Path is {Path(raw_path).absolute()}")
     return Path(raw_path)
@@ -144,18 +149,18 @@ def ask_vocabularies(vocabulary_path):
     vocabularies = Vocabularies(vocabulary_list, True)
     while True:
         vocabulary = vocabularies.get_new_vocabulary()
-        name = input_with_exit(f"Other name of {vocabulary.name}: ")
+        name = input_with_exit(_("trainer.ask.translated").format(vocabulary.name))
         if name in ["stats"]:
             states = vocabularies.get_state()
-            print(f"Your states:\n\tTotal: {states[0]}/{states[1]} ({states[2]}%)")
+            print(_("trainer.ask.states").format(*states))
         elif name == "skip":
-            print(f"It would be {vocabulary.translations}")
+            print(_("trainer.ask.it_would".format(vocabulary.translations)))
             continue
         else:
             is_right = vocabularies.next_try(name)
-            print("Right" if is_right else "False",
-                  f"{vocabulary.tries_right}/{vocabulary.tries}",
-                  f"It would be {vocabulary.translations}" if not is_right else ""
+            print(_("trainer.ask.right") if is_right else _("trainer.ask.false"),
+                  _("trainer.ask.tries").format(vocabulary.tries_right, vocabulary.tries),
+                  _("trainer.ask.it_would").format(vocabulary.translations) if not is_right else ""
                   )
 
 
@@ -163,89 +168,76 @@ def new_vocabulary_list():
     path = get_path()
 
     if not path.exists():
-        if input_with_exit("Do you want to create this file? (y=Yes, n=No) ").lower() == "y":
+        if input_with_exit(_("trainer.new_file.create_file")).lower() == "y":
             with open(path, "w") as file:
                 json.dump(dict(entries=[""]), file)
 
     while True:
         names = []
         while True:
-            if name := input_with_exit("Source name: "):
+            if name := input_with_exit(_("trainer.new_file.source")):
                 names.append(name)
             else:
                 break
 
         translations = []
         while True:
-            if name := input_with_exit("Translation: "):
+            if name := input_with_exit(_("trainer.new_file.translation")):
                 translations.append(name)
             else:
                 break
 
-        source_example = input_with_exit("Source example: ")
-        target_example = input_with_exit("Translation example: ")
+        source_example = input_with_exit(_("trainer.new_file.source.example"))
+        target_example = input_with_exit(_("trainer.new_file.translation.example"))
 
         with open(path, "r+") as file:
             current_data = json.load(file)
-            current_data["entries"].append({
-                "word": names,
-                "translation": translations,
-                "example": {
-                    "source": source_example,
-                    "target": target_example
-                }
-            })
+            current_data["entries"].append(
+                dict(
+                    word=names,
+                    translation=translations,
+                    example=dict(source=source_example, target=target_example)
+                )
+            )
             file.seek(0)
             json.dump(current_data, file, indent=2)
 
 
-TUTORIAL_TEXT = """
-When you start this application, you will be asked what you want to do.
-You must make a selection from the following to continue. 
+MAIN_PROMPT = _("trainer.main.prompt_help")
 
-o = open vocabulary file
-n = new vocabulary file
-t = Show this tutorial
-c = Cancel
+TUTORIAL_TEXT = _("trainer.tutorial").format(MAIN_PROMPT)
 
-If you need to enter information, you can enter %exit% to exit
-or %main% to go into main menu
+WELCOME_MESSAGE = _("trainer.welcome")
 
-During the requests you can type "stats" to see your statistics
+ACTION_QUESTION = _("trainer.main.ask_action")
 
+INVALID_ACTION = _("trainer.main.ask_action.invalid")
 
-Important information:
-Your statistics will not be saved!
-"""
-
-EXIT_MESSAGE = "Thanks for using"
-
-MAIN_PROMPT = """
-o = open vocabulary file
-n = new vocabulary file
-t = Show this tutorial
-c = Cancel
-"""
+EXIT_MESSAGE = _("trainer.thanks_for_using")
 
 
 def main():
+    print(WELCOME_MESSAGE)
     while True:
         try:
             print(MAIN_PROMPT)
-            activity = input_with_exit("What do you want to do? ").lower()
-            if activity == "c":
+            activity = input_with_exit(ACTION_QUESTION)
+            activity_low = activity.lower()
+            if activity_low == "c":
                 raise ExitMessage
-            elif activity == "n":
+            elif activity_low == "n":
                 new_vocabulary_list()
-            elif activity == "o":
+            elif activity_low == "o":
                 ask_vocabularies(get_path())
-            elif activity == "t":
+            elif activity_low == "t":
                 print(TUTORIAL_TEXT)
+            else:
+                print(INVALID_ACTION.format(action=repr(activity)))
         except GoToMainMenuMessage:
             continue
         except ExitMessage:
             print(EXIT_MESSAGE)
-            sys.exit()
+            return
 
 
 if __name__ == '__main__':

@@ -1,0 +1,26 @@
+{
+  "trainer.vocabulary.error.directions": "Fehler mit Übersetzungsrichtungen. Bitte melde diesen Fehler auf https://github.com/",
+  "trainer.path.get_path": "Pfad (Absolut): ",
+  "trainer.path.so_selected": "Keine Datei ausgewählt",
+  "trainer.ask.translated": "Übersetzter Name von {}: ",
+  "trainer.ask.states": "Deine Statistiken:\\n\\tGesamt: {}/{} {}%",
+  "trainer.ask.it_would": "Es währe {}",
+  "trainer.ask.right": "Richtig",
+  "trainer.ask.false": "Falsch",
+  "trainer.ask.tries": "{}/{}",
+
+
+  "trainer.new_file.create_file": "Möchtest du diese Datei erstellen? (y=Yes, n=No) ",
+  "trainer.new_file.source": "Ursprungsname: ",
+  "trainer.new_file.source.example": "Ursprungsbeispiel: ",
+  "trainer.new_file.translation": "Übersetzung: ",
+  "trainer.new_file.translation.example": "Übersetzungsbeispiel: ",
+
+  "trainer.main.prompt_help": "\no = Öffne Vokabeldatei und lerne die Vokabeln\nn = Neue Vokabeldatei / Füge zu Vokabeldatei hinzu\nt = Zeige das Tutorial\nc = Abbrechen",
+  "trainer.tutorial": "Wenn Du diese App startest, wirst du gefragt, was Du machen möchtest.\nDu musst eine Auswahl aus den Folgenden machen, um weiterzukommen. \n\n{}\n\nWenn Du Informationen eingeben sollst, kannst Du %exit% eingeben, um das Programm zu Beenden,\noder %main% um ins Hauptmenü zu gelangen\n\n\nWährend du Vokabeln lernst, kannst du die folgenden Befehle nutzen:\n\nskip: Überspringt die aktuelle Vokabel\nstats: Zeigt deine Statistiken\n\nDu kannst auch hier %exit% und %main% nutzen\n\n\nWichtige Informationen:\nDeine Statistiken werden nicht gespeichert!\n\nTipp zum Testen: Du kannst die Testvokabeldatei test.json nutzen",
+  "trainer.welcome": "Willkommen zu diesem Vokabeltrainer!",
+  "trainer.main.ask_action": "Was willst du tun? ",
+  "trainer.main.ask_action.invalid": "{} ist keine gültige Aktion. Bitte wähle eine andere",
+  "trainer.thanks_for_using": "Danke fürs benutzen!"
+
+}
