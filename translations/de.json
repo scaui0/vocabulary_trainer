@@ -3,7 +3,7 @@
   "trainer.path.get_path": "Pfad (Absolut): ",
   "trainer.path.so_selected": "Keine Datei ausgewählt",
   "trainer.ask.translated": "Übersetzter Name von {}: ",
-  "trainer.ask.states": "Deine Statistiken:\\n\\tGesamt: {}/{} {}%",
+  "trainer.ask.states": "Deine Statistiken:\nGesamt: {}/{} {}%",
   "trainer.ask.it_would": "Es währe {}",
   "trainer.ask.right": "Richtig",
   "trainer.ask.false": "Falsch",

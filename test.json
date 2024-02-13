@@ -62,18 +62,6 @@
         "source": "",
         "target": ""
       }
-    },
-    {
-      "word": [
-        "hallo"
-      ],
-      "translation": [
-        "hello"
-      ],
-      "example": {
-        "source": "",
-        "target": ""
-      }
     }
   ]
 }

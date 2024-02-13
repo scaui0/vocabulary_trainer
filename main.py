@@ -24,7 +24,7 @@ class Vocabulary:
     BACKWARDS_DIRECTION = "backwards"
 
     def __init__(self, sources: List, translations: List, source_example: str, target_example: str):
-        self.translations = translations
+        self._translations = translations
         self.sources = sources
         self.source_example = source_example
         self.target_example = target_example
@@ -41,7 +41,7 @@ class Vocabulary:
 
     def next_try(self, input_name: str):
         if self.current_question_direction == self.FORWARD_DIRECTION:
-            correct = (input_name in self.translations)
+            correct = (input_name in self._translations)
         elif self.current_question_direction == self.BACKWARDS_DIRECTION:
             correct = (input_name in self.sources)
         else:
@@ -67,14 +67,32 @@ class Vocabulary:
         if self.current_question_direction == self.FORWARD_DIRECTION:
             return random.choice(self.sources)
         elif self.current_question_direction == self.BACKWARDS_DIRECTION:
-            return random.choice(self.translations)
+            return random.choice(self._translations)
         else:
             print(_("trainer.vocabulary.error.directions"))
 
-    def __repr__(self):
+    @property
+    def translation(self) -> str:
+        if self.current_question_direction == self.FORWARD_DIRECTION:
+            return random.choice(self._translations)
+        elif self.current_question_direction == self.BACKWARDS_DIRECTION:
+            return random.choice(self.sources)
+        else:
+            raise OSError(f"self.direction is invalid. It is {self.current_question_direction}\n{self!r}")
+
+    @property
+    def translations(self):
+        if self.current_question_direction == self.FORWARD_DIRECTION:
+            return self._translations
+        elif self.current_question_direction == self.BACKWARDS_DIRECTION:
+            return self.sources
+        else:
+            raise OSError(f"self.direction is invalid. It is {self.current_question_direction}\n{self!r}")
+
+    def __str__(self):
         return (f"{self.__class__.__name__}: "
                 f"Name: {self.sources}, "
-                f"To name: {self.translations}, "
+                f"To name: {self._translations}, "
                 f"Quote {int(self.quote)}, "
                 f"Tries right {self.tries_right}, "
                 f"Tries false {self.tries_false}"
@@ -83,7 +101,7 @@ class Vocabulary:
 
 
 class Vocabularies:
-    def __init__(self, vocabularies: List[Vocabulary], random_direction):
+    def __init__(self, vocabularies: List[Vocabulary], random_direction=False):
         self.vocabularies = vocabularies
         self.current_index = 0
         self.random_direction = random_direction
@@ -92,10 +110,6 @@ class Vocabularies:
     def from_json(cls, json_data, random_direction):
         vocabularies = [Vocabulary.from_json(vd) for vd in json_data]
         return cls(vocabularies, random_direction)
-
-    def __add__(self, other: Vocabulary):
-        if isinstance(other, Vocabulary):
-            self.vocabularies.append(other)
 
     def get_new_vocabulary(self):
         probabilities = [1 / vocab.quote for vocab in self.vocabularies]
@@ -149,13 +163,16 @@ def ask_vocabularies(vocabulary_path):
     vocabularies = Vocabularies(vocabulary_list, True)
     while True:
         vocabulary = vocabularies.get_new_vocabulary()
-        name = input_with_exit(_("trainer.ask.translated").format(vocabulary.name))
-        if name in ["stats"]:
+        name = input_with_exit(_("trainer.ask.translated").format(repr(vocabulary.name)))
+        if name == "stats":
             states = vocabularies.get_state()
             print(_("trainer.ask.states").format(*states))
         elif name == "skip":
-            print(_("trainer.ask.it_would".format(vocabulary.translations)))
+            print(_("trainer.ask.it_would").format(
+                vocabulary.name))
             continue
+        elif name == "bug":
+            print(vocabularies.vocabularies)
         else:
             is_right = vocabularies.next_try(name)
             print(_("trainer.ask.right") if is_right else _("trainer.ask.false"),
@@ -242,3 +259,11 @@ def main():
 
 if __name__ == '__main__':
     main()
+    vocab1 = Vocabulary(
+        sources=["village"],
+        translations=["Dorf"],
+        source_example="Beispiel für Quelle",
+        target_example="Beispiel für Übersetzung"
+    )
+    for i in range(1000):
+        print(vocab1.name)
