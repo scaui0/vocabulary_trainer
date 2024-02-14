@@ -55,7 +55,7 @@ class VocabularyWidget(QWidget):
     def check_vocabulary(self):
         is_right = self.vocabularies.next_try(self.vocabulary_entry.text())
         text = ("Right" if is_right else "False",
-                f"{self.vocabulary.tries_right}/{self.vocabulary.tries}",
+                f"{self.vocabulary._tries_right}/{self.vocabulary.tries}",
                 f"It would be {self.vocabulary._translations}" if not is_right else ""
                 )
         self.show_result_label.setText(" ".join(text))

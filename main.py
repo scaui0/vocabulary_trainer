@@ -259,11 +259,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    vocab1 = Vocabulary(
-        sources=["village"],
-        translations=["Dorf"],
-        source_example="Beispiel für Quelle",
-        target_example="Beispiel für Übersetzung"
-    )
-    for i in range(1000):
-        print(vocab1.name)
