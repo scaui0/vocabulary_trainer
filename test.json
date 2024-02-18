@@ -62,6 +62,458 @@
         "source": "",
         "target": ""
       }
+    },
+    {
+      "word": [
+        "sie"
+      ],
+      "translation": [
+        "she"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Sie"
+      ],
+      "translation": [
+        "you"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "er"
+      ],
+      "translation": [
+        "he"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "ich"
+      ],
+      "translation": [
+        "I"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "du"
+      ],
+      "translation": [
+        "you"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "hallo"
+      ],
+      "translation": [
+        "hello"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "laufen"
+      ],
+      "translation": [
+        "to walk"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "sprechen"
+      ],
+      "translation": [
+        "to speak"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "reden"
+      ],
+      "translation": [
+        "to talk"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "sagen"
+      ],
+      "translation": [
+        "to say"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "gehen"
+      ],
+      "translation": [
+        "to go"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "tun"
+      ],
+      "translation": [
+        "to do"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "ja"
+      ],
+      "translation": [
+        "yes"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "nein"
+      ],
+      "translation": [],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "rot"
+      ],
+      "translation": [
+        "red"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "orange"
+      ],
+      "translation": [
+        "orange"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "gelb"
+      ],
+      "translation": [
+        "yellow"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "gr\u00fcn"
+      ],
+      "translation": [
+        "green"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "blau"
+      ],
+      "translation": [
+        "blue"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "lila"
+      ],
+      "translation": [
+        "purple"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "pink"
+      ],
+      "translation": [
+        "pink"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "grau"
+      ],
+      "translation": [
+        "grey"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "wei\u00df"
+      ],
+      "translation": [
+        "white"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "schwarz"
+      ],
+      "translation": [
+        "black"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Null"
+      ],
+      "translation": [
+        "zero"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Eins"
+      ],
+      "translation": [],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Zwei"
+      ],
+      "translation": [
+        "two"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Drei"
+      ],
+      "translation": [
+        "three"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Vier"
+      ],
+      "translation": [
+        "four"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "F\u00fcnf"
+      ],
+      "translation": [
+        "five"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Sechs"
+      ],
+      "translation": [
+        "six"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Sieben"
+      ],
+      "translation": [
+        "seven"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Acht"
+      ],
+      "translation": [
+        "eight"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Neun"
+      ],
+      "translation": [
+        "nine"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Zehn"
+      ],
+      "translation": [
+        "ten"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Elf"
+      ],
+      "translation": [
+        "eleven"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "Zw\u00f6lf"
+      ],
+      "translation": [
+        "twelve"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
+    },
+    {
+      "word": [
+        "es"
+      ],
+      "translation": [
+        "it"
+      ],
+      "example": {
+        "source": "",
+        "target": ""
+      }
     }
   ]
 }

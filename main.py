@@ -1,3 +1,5 @@
+#! usr/bin/env python3
+
 import json
 import random
 import sys
@@ -5,6 +7,7 @@ from pathlib import Path
 from typing import List, Dict
 
 from translator import MultipleLanguageTranslator
+
 
 translator = MultipleLanguageTranslator(Path("translations"))
 translator.install("de")

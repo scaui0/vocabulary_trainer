@@ -83,11 +83,17 @@ class Vocabulary:
 
     @property
     def translation(self):
-        return random.choice([self.forward_vocabulary, self.backward_vocabulary]).translation
+        if self.direction == self.FORWARD_DIRECTION:
+            return self.forward_vocabulary.translation
+        else:
+            return self.backward_vocabulary.translation
 
     @property
     def source(self):
-        return random.choice([self.forward_vocabulary, self.backward_vocabulary]).source
+        if self.direction == self.FORWARD_DIRECTION:
+            return self.forward_vocabulary.source
+        else:
+            return self.backward_vocabulary.source
 
     def next_try(self, name):
         self.max_tries += 1
