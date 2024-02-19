@@ -77,7 +77,8 @@
     },
     {
       "word": [
-        "Sie"
+        "Sie",
+        "du"
       ],
       "translation": [
         "you"
@@ -105,18 +106,6 @@
       ],
       "translation": [
         "I"
-      ],
-      "example": {
-        "source": "",
-        "target": ""
-      }
-    },
-    {
-      "word": [
-        "du"
-      ],
-      "translation": [
-        "you"
       ],
       "example": {
         "source": "",
@@ -223,7 +212,9 @@
       "word": [
         "nein"
       ],
-      "translation": [],
+      "translation": [
+        "no"
+      ],
       "example": {
         "source": "",
         "target": ""
@@ -365,7 +356,9 @@
       "word": [
         "Eins"
       ],
-      "translation": [],
+      "translation": [
+        "one"
+      ],
       "example": {
         "source": "",
         "target": ""

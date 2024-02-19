@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {
+      "sources": [""],
+      "translations": [""],
+      "examples": {
+        "source": "",
+        "target": ""
+      },
+      "stats": {
+        "tries_total": 0,
+        "tries_right": 0,
+        "tries_false": 0
+      }
+    }
+  ]
+}
