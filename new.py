@@ -1,4 +1,5 @@
 import dataclasses
+import json
 import random
 from typing import List
 
@@ -59,6 +60,9 @@ class SimpleVocabulary:
             self.stats.false_try()
             return False, self.translations
 
+    def __repr__(self):
+        return f"{self.sources}: {self.translations}"
+
 
 class Vocabulary:
     FORWARD_DIRECTION = "forwards"
@@ -77,7 +81,7 @@ class Vocabulary:
 
     @classmethod
     def from_json(cls, json_data):
-        example = json_data["example"]
+        example = json_data["examples"]
         return cls(json_data["sources"], json_data["translations"], example["source"], example["target"],
                    Stats.from_json(json_data["stats"]))
 
@@ -104,6 +108,18 @@ class Vocabulary:
 
         return response
 
+    def __repr__(self):
+        return self.forward_vocabulary.__repr__()
+
 
 def main():
-    pass
+    with open("test2.json") as file:
+        content = json.load(file)
+    print("Content:", content)
+    vocs = []
+    for voc_data in content["entries"]:
+        vocs.append(Vocabulary.from_json(voc_data))
+    print(vocs)
+
+if __name__ == '__main__':
+    main()
