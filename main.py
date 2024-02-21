@@ -115,7 +115,7 @@ class Vocabularies:
         return cls(vocabularies, random_direction)
 
     def get_new_vocabulary(self):
-        probabilities = [1 / vocab.quote for vocab in self.vocabularies]
+        probabilities = [vocab.tries_right / vocab.tries for vocab in self.vocabularies]
         self.current_index = random.choices(range(len(self.vocabularies)), weights=probabilities)[0]
         if self.random_direction:
             self.vocabularies[self.current_index].set_random_direction()
@@ -252,7 +252,7 @@ def main():
             elif activity_low == "t":
                 print(TUTORIAL_TEXT)
             else:
-                print(INVALID_ACTION.format(action=repr(activity)))
+                print(INVALID_ACTION.format(repr(activity)))
         except GoToMainMenuMessage:
             continue
         except ExitMessage:

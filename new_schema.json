@@ -1,17 +1,67 @@
 {
-  "entries": [
-    {
-      "sources": [""],
-      "translations": [""],
-      "examples": {
-        "source": "",
-        "target": ""
-      },
-      "stats": {
-        "tries_total": 0,
-        "tries_right": 0,
-        "tries_false": 0
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "subentries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sources": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "targets": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "stats": {
+                  "type": "object",
+                  "properties": {
+                    "tries_total": {"type": "integer"},
+                    "tries_right": {"type": "integer"},
+                    "tries_false": {"type": "integer"}
+                  },
+                  "required": ["tries_total", "tries_right", "tries_false"]
+                }
+              },
+              "required": ["sources", "targets", "stats"]
+            }
+          },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "tries_total": {"type": "integer"},
+              "tries_right": {"type": "integer"},
+              "tries_false": {"type": "integer"}
+            },
+            "required": ["tries_total", "tries_right", "tries_false"]
+          }
+        },
+        "required": ["sources", "targets", "stats"]
       }
     }
-  ]
+  },
+  "required": ["entries"]
 }

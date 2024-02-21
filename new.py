@@ -3,6 +3,41 @@ import json
 import random
 from typing import List
 
+SCHEMA = {
+    "type": "object",
+    "properties": {
+        "entries": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "sources": {"type": "array", "items": {"type": "string"}},
+                    "translations": {"type": "array", "items": {"type": "string"}},
+                    "examples": {
+                        "type": "object",
+                        "properties": {
+                            "source": {"type": "string"},
+                            "target": {"type": "string"}
+                        },
+                        "required": ["source", "target"]
+                    },
+                    "stats": {
+                        "type": "object",
+                        "properties": {
+                            "tries_total": {"type": "integer"},
+                            "tries_right": {"type": "integer"},
+                            "tries_false": {"type": "integer"}
+                        },
+                        "required": ["tries_total", "tries_right", "tries_false"]
+                    }
+                },
+                "required": ["sources", "translations", "examples", "stats"]
+            }
+        }
+    },
+    "required": ["entries"]
+}
+
 
 @dataclasses.dataclass
 class Stats:
@@ -120,6 +155,10 @@ def main():
     for voc_data in content["entries"]:
         vocs.append(Vocabulary.from_json(voc_data))
     print(vocs)
+
+
+
+
 
 if __name__ == '__main__':
     main()
