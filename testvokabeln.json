@@ -1,34 +1,42 @@
 {
   "entries": [
     {
-      "sources": ["sein"],
+      "sources": ["Sein"],
       "targets": ["être"],
       "stats": {
         "tries_total": 0,
         "tries_right": 0,
         "tries_false": 0
       },
+      "examples": {
+        "target": "",
+        "source": ""
+      },
       "subentries": [
         {
-          "sources": [
-            "ich bin"
-          ],
-          "targets": [
-            "je suis"
-          ],
+          "sources": ["ich bin"],
+          "targets": ["je suis"],
           "stats": {
             "tries_total": 0,
             "tries_right": 0,
             "tries_false": 0
+          },
+          "examples": {
+            "target": "",
+            "source": ""
           }
         },
         {
           "sources": ["du bist"],
-          "targets": ["du es"],
+          "targets": ["tu es"],
           "stats": {
             "tries_total": 0,
             "tries_right": 0,
             "tries_false": 0
+          },
+          "examples": {
+            "target": "",
+            "source": ""
           }
         },
         {
@@ -38,6 +46,10 @@
             "tries_total": 0,
             "tries_right": 0,
             "tries_false": 0
+          },
+          "examples": {
+            "target": "",
+            "source": ""
           }
         },
         {
@@ -47,6 +59,10 @@
             "tries_total": 0,
             "tries_right": 0,
             "tries_false": 0
+          },
+          "examples": {
+            "target": "",
+            "source": ""
           }
         },
         {
@@ -56,6 +72,10 @@
             "tries_total": 0,
             "tries_right": 0,
             "tries_false": 0
+          },
+          "examples": {
+            "target": "",
+            "source": ""
           }
         },
         {
@@ -65,6 +85,10 @@
             "tries_total": 0,
             "tries_right": 0,
             "tries_false": 0
+          },
+          "examples": {
+            "target": "",
+            "source": ""
           }
         },
         {
@@ -74,9 +98,14 @@
             "tries_total": 0,
             "tries_right": 0,
             "tries_false": 0
+          },
+          "examples": {
+            "target": "",
+            "source": ""
           }
         }
       ]
     }
-  ]
+  ],
+  "random_direction": true
 }

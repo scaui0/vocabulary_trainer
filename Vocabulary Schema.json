@@ -19,6 +19,27 @@
               "type": "string"
             }
           },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "tries_total": {"type": "integer"},
+              "tries_right": {"type": "integer"},
+              "tries_false": {"type": "integer"}
+            },
+            "required": ["tries_total", "tries_right", "tries_false"]
+          },
+          "examples": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              }
+            },
+            "required": ["target", "source"]
+          },
           "subentries": {
             "type": "array",
             "items": {
@@ -44,24 +65,31 @@
                     "tries_false": {"type": "integer"}
                   },
                   "required": ["tries_total", "tries_right", "tries_false"]
+                },
+                "examples": {
+                  "type": "object",
+                  "properties": {
+                    "target": {
+                      "type": "string"
+                    },
+                    "source": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["target", "source"]
                 }
               },
-              "required": ["sources", "targets", "stats"]
+              "required": ["sources", "targets", "stats", "examples"]
             }
-          },
-          "stats": {
-            "type": "object",
-            "properties": {
-              "tries_total": {"type": "integer"},
-              "tries_right": {"type": "integer"},
-              "tries_false": {"type": "integer"}
-            },
-            "required": ["tries_total", "tries_right", "tries_false"]
           }
         },
-        "required": ["sources", "targets", "stats"]
+        "required": ["sources", "targets", "stats", "examples", "subentries"]
       }
+    },
+    "random_direction": {
+      "type": "boolean",
+      "default": true
     }
   },
-  "required": ["entries"]
+  "required": ["entries", "random_direction"]
 }

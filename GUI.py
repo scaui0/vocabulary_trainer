@@ -83,7 +83,7 @@ class Settings(FileBasedSettings):
 
     def _to_dict(self) -> dict:
         return dict(
-            theme=self["theme"].value,
+            theme=self["theme"]._value,
             theme_color=self["theme_color"].rgb()
         )
 
