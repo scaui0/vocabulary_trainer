@@ -1,7 +1,7 @@
 {
   "entries": [
     {
-      "sources": ["Sein"],
+      "sources": ["sein"],
       "targets": ["être"],
       "stats": {
         "tries_total": 0,

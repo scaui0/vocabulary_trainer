@@ -135,7 +135,7 @@ class GUIAsker(AskerBase, QWidget):
 
 
 def main():
-    asker = GUIAsker(Path(__file__).parent.parent / Path("testvokabeln.json"))
+    asker = CommandLineAsker(Path(__file__).parent.parent / Path("testvokabeln.json"))
     asker.run()
 
 
