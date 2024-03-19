@@ -139,7 +139,7 @@ class Vocabularies:
 
 def get_path():
     # filedialog.askopenfilename(
-    #         filetypes=[("JSON File", "*.json"), ("VOCABULARY File", "*.vocabularies")])
+    #         filetypes=[("JSON File", "*.json"), ("VOCABULARY File", "*._vocabularies")])
     raw_path = input_with_exit(_("trainer.path.get_path"))
     if not raw_path:
         print(_("trainer.path.no_selected"))

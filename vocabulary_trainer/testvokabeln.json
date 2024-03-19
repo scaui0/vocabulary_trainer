@@ -6,7 +6,7 @@
       "stats": {
         "tries_total": 0,
         "tries_right": 0,
-        "tries_false": 0
+        "tries_wrong": 0
       },
       "examples": {
         "target": "",
@@ -19,7 +19,7 @@
           "stats": {
             "tries_total": 0,
             "tries_right": 0,
-            "tries_false": 0
+            "tries_wrong": 0
           },
           "examples": {
             "target": "",
@@ -32,7 +32,7 @@
           "stats": {
             "tries_total": 0,
             "tries_right": 0,
-            "tries_false": 0
+            "tries_wrong": 0
           },
           "examples": {
             "target": "",
@@ -45,7 +45,7 @@
           "stats": {
             "tries_total": 0,
             "tries_right": 0,
-            "tries_false": 0
+            "tries_wrong": 0
           },
           "examples": {
             "target": "",
@@ -58,7 +58,7 @@
           "stats": {
             "tries_total": 0,
             "tries_right": 0,
-            "tries_false": 0
+            "tries_wrong": 0
           },
           "examples": {
             "target": "",
@@ -71,7 +71,7 @@
           "stats": {
             "tries_total": 0,
             "tries_right": 0,
-            "tries_false": 0
+            "tries_wrong": 0
           },
           "examples": {
             "target": "",
@@ -84,7 +84,7 @@
           "stats": {
             "tries_total": 0,
             "tries_right": 0,
-            "tries_false": 0
+            "tries_wrong": 0
           },
           "examples": {
             "target": "",
@@ -97,7 +97,7 @@
           "stats": {
             "tries_total": 0,
             "tries_right": 0,
-            "tries_false": 0
+            "tries_wrong": 0
           },
           "examples": {
             "target": "",

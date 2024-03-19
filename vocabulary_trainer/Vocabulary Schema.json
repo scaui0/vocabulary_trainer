@@ -24,9 +24,9 @@
             "properties": {
               "tries_total": {"type": "integer"},
               "tries_right": {"type": "integer"},
-              "tries_false": {"type": "integer"}
+              "tries_wrong": {"type": "integer"}
             },
-            "required": ["tries_total", "tries_right", "tries_false"]
+            "required": ["tries_total", "tries_right", "tries_wrong"]
           },
           "examples": {
             "type": "object",
@@ -62,9 +62,9 @@
                   "properties": {
                     "tries_total": {"type": "integer"},
                     "tries_right": {"type": "integer"},
-                    "tries_false": {"type": "integer"}
+                    "tries_wrong": {"type": "integer"}
                   },
-                  "required": ["tries_total", "tries_right", "tries_false"]
+                  "required": ["tries_total", "tries_right", "tries_wrong"]
                 },
                 "examples": {
                   "type": "object",
