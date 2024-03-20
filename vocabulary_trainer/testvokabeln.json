@@ -107,5 +107,6 @@
       ]
     }
   ],
-  "random_direction": true
+  "random_direction": true,
+  "name": "Test Vocabularies"
 }

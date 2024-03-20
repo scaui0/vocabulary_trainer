@@ -47,8 +47,8 @@ class BaseTranslator:
             return key
 
 
-class MultipleLanguageTranslator(BaseTranslator):
-    def __init__(self, main_dir: PathLike, default_language="en", supported_languages: List[str] | str = All_LANGUAGES):
+class Translator(BaseTranslator):
+    def __init__(self, main_dir: PathLike | str, default_language="en", supported_languages: List[str] | str = All_LANGUAGES):
         self.translation_dir = main_dir
         super().__init__({}, default_language, supported_languages)
 
@@ -64,7 +64,7 @@ class MultipleLanguageTranslator(BaseTranslator):
 
 
 def main():
-    translator = MultipleLanguageTranslator(Path("translations"), "en", ["de", "en"])
+    translator = Translator(Path("translations"), "en", ["de", "en"])
 
     for lang in ["de", "en"]:
         translator.install(lang)

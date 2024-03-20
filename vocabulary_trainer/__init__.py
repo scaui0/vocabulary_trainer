@@ -5,7 +5,6 @@ from pathlib import Path
 from pprint import pp
 from typing import List, Tuple
 
-
 JSONSCHEMA = json.loads((Path(__file__).parent / "Vocabulary Schema.json").read_text("utf-8"))
 
 
@@ -217,15 +216,19 @@ class TreeVocabulary:
         return self.all_vocabularies.__repr__()
 
 
+
 class VocabularyList:
     def __init__(self, vocabularies: List[TreeVocabulary]):
         self.vocabularies = vocabularies
         self.current_index = 0
 
     @classmethod
-    def from_json(cls, json_data):
+    def from_dict(cls, json_data):
         vocabularies = [TreeVocabulary.from_dict(voc_data) for voc_data in json_data["entries"]]
         return cls(vocabularies)
+
+    def to_dict(self):
+        return self.vocabularies
 
     def get_new_vocabulary(self):
         self.current_index = random.randint(0, len(self.vocabularies) - 1)
@@ -234,15 +237,43 @@ class VocabularyList:
     def next_try(self, name):
         return self.vocabularies[self.current_index].next_try(name)
 
+    def __iter__(self):
+        """Iterate over vocabularies (sorted)"""
+        yield from self.vocabularies
+
     def __repr__(self):
         return self.vocabularies.__repr__()
 
 
+class Vocabularies(VocabularyList):
+    def __init__(self, vocabularies: List[TreeVocabulary], name, has_random_direction=True):
+        super().__init__(vocabularies)
+
+        self.name = name
+        self.random_direction = has_random_direction
+
+    @classmethod
+    def from_file(cls, path, encoding="utf-8"):
+        with open(path, "r", encoding=encoding) as file:
+            return cls.from_dict(json.load(file))
+
+    def to_dict(self):
+        return dict(
+            entries=[voc.to_dict() for voc in self.vocabularies],
+            name=self.name,
+            random_direction=self.random_direction
+        )
+
+    @classmethod
+    def from_dict(cls, json_data):
+        vocabularies = [TreeVocabulary.from_dict(voc_data) for voc_data in json_data["entries"]]
+        return cls(vocabularies, json_data["name"], json_data["random_direction"])
+
+
 def main():
-    with (Path(__file__).parent / Path("testvokabeln.json")).open(encoding="utf-8") as file:
-        a = TreeVocabulary.from_dict(json.load(file)["entries"][0])
-    pp(a.to_dict())
+    a = Vocabularies.from_file("testvokabeln.json")
     print(json.dumps(a.to_dict(), indent=2))
+
 
 if __name__ == '__main__':
     main()

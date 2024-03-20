@@ -6,10 +6,10 @@ import sys
 from pathlib import Path
 from typing import List, Dict
 
-from translator import MultipleLanguageTranslator
+from translator import Translator
 
 
-translator = MultipleLanguageTranslator(Path("translations"))
+translator = Translator(Path("translations"))
 translator.install("de")
 _ = translator.translate
 

@@ -89,7 +89,10 @@
     "random_direction": {
       "type": "boolean",
       "default": true
+    },
+    "name": {
+      "type": "string"
     }
   },
-  "required": ["entries", "random_direction"]
+  "required": ["entries", "random_direction", "name"]
 }
