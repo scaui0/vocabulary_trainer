@@ -1,18 +1,25 @@
 import dataclasses
 import json
+import operator
 import random
 from pathlib import Path
-from pprint import pp
 from typing import List, Tuple
 
 JSONSCHEMA = json.loads((Path(__file__).parent / "Vocabulary Schema.json").read_text("utf-8"))
 
 
+def better_sum(iterable):
+    result = iterable[0]
+    for item in iterable[1:]:
+        result = result + item
+    return result
+
+
 @dataclasses.dataclass
 class Stats:
-    tries_right: int
-    tries_wrong: int
-    _tries_total: int = dataclasses.field(init=False, default=0)
+    right_tries: int
+    wrong_tries: int
+    _total_tries: int = dataclasses.field(init=False, default=0)
     quote: int = dataclasses.field(init=False, default=0)
 
     def __post_init__(self):
@@ -22,32 +29,69 @@ class Stats:
     def from_dict(cls, json_data):
         return cls(json_data["tries_right"], json_data["tries_total"])
 
-    def to_dict(self) -> dict:
+    def to_json(self) -> dict:
         return dict(
             tries_total=self.tries_total,
-            tries_right=self.tries_right,
-            tries_wrong=self.tries_wrong
+            tries_right=self.right_tries,
+            tries_wrong=self.wrong_tries
         )
 
     def right_try(self, points=1):
-        self.tries_right += points
+        self.right_tries += points
         self._update_total_tries()
 
     def wrong_try(self, points=1):
-        self.tries_wrong += points
+        self.wrong_tries += points
         self._update_total_tries()
 
     @property
     def tries_total(self):
-        return self._tries_total
+        return self._total_tries
 
     def _update_total_tries(self):
-        self._tries_total = self.tries_right + self.tries_wrong
-        self.quote = int(((self.tries_right + 1) / (self._tries_total + 1)) * 100)
+        self._total_tries = self.right_tries + self.wrong_tries
+        self.quote = int(((self.right_tries + 1) / (self._total_tries + 1)) * 100)
+
+    def _compare(self, other, func):
+        if isinstance(other, Stats):
+            return func(self.quote, other.quote)
+        else:
+            return NotImplemented
+
+    def __le__(self, other):
+        return self._compare(other, operator.le)
+
+    def __lt__(self, other):
+        return self._compare(other, operator.lt)
+
+    def __eq__(self, other):
+        return self._compare(other, operator.eq)
+
+    def __ne__(self, other):
+        return self._compare(other, operator.ne)
+
+    def __ge__(self, other):
+        return self._compare(other, operator.ge)
+
+    def __gt__(self, other):
+        return self._compare(other, operator.gt)
+
+    @staticmethod
+    def _math_helper(self, other, func):
+        if isinstance(other, Stats):
+            return Stats(
+                func(self.right_tries, other.right_tries),
+                func(self.wrong_tries, other.wrong_tries)
+            )
+        else:
+            return NotImplemented
+
+    def __add__(self, other):
+        return self._math_helper(self, other, operator.add)
 
 
 class _SimpleVocabulary:
-    def __init__(self, sources: List[str], translations: List[str], source_example: str, target_example: str,
+    def __init__(self, sources: Tuple[str], translations: Tuple[str], source_example: str, target_example: str,
                  stats: Stats):
         self.stats = stats
         self.target_example = target_example
@@ -63,13 +107,13 @@ class _SimpleVocabulary:
     def source(self):
         return random.choice(self.sources)
 
-    def next_try(self, name):
+    def next_try(self, name) -> Tuple[bool, Tuple[str] | None]:
         if name in self.translations:
             self.stats.right_try()
-            return (True,)
+            return True, None
         else:
             self.stats.wrong_try()
-            return False, self.translations
+            return False, tuple(self.translations)
 
     def __repr__(self):
         return f"{self.sources}: {self.translations}"
@@ -79,7 +123,7 @@ class Vocabulary:
     FORWARD_DIRECTION = "forwards"
     BACKWARD_DIRECTION = "backwards"
 
-    def __init__(self, sources: List[str], translations: List[str], source_example: str, target_example: str,
+    def __init__(self, sources: Tuple[str], translations: Tuple[str], source_example: str, target_example: str,
                  stats: Stats, random_direction=True):
 
         self.forward_vocabulary = _SimpleVocabulary(sources, translations, source_example, target_example, stats)
@@ -95,11 +139,11 @@ class Vocabulary:
         return cls(json_data["sources"], json_data["targets"], example["source"], example["target"],
                    Stats.from_dict(json_data["stats"]), random_direction)
 
-    def to_dict(self) -> dict:
+    def to_json(self) -> dict:
         return dict(
             sources=self.sources,
             targets=self.translations,
-            stats=self.states.to_dict(),
+            stats=self.states.to_json(),
             examples=dict(
                 target=self.target_example,
                 source=self.source_example
@@ -148,7 +192,7 @@ class Vocabulary:
         else:
             return self.backward_vocabulary.source_example
 
-    def next_try(self, name) -> Tuple[bool, List[str] | None]:
+    def next_try(self, name) -> Tuple[bool, Tuple[str] | None]:
         if self.direction == self.FORWARD_DIRECTION:
             response = self.forward_vocabulary.next_try(name)
         else:
@@ -156,7 +200,7 @@ class Vocabulary:
 
         return response
 
-    def set_random_direction(self):
+    def randomize_vocabulary_direction(self):
         if self.random_direction:
             self.direction = random.choice([self.FORWARD_DIRECTION, self.BACKWARD_DIRECTION])
 
@@ -169,73 +213,87 @@ class TreeVocabulary:
         self._main_vocabulary = main_vocabulary
         self._vocabularies = vocabularies
         self.all_vocabularies: List[Vocabulary] = vocabularies + [self._main_vocabulary]
-        self.current_index = 0
+        self.current_vocabulary = None
 
     @classmethod
     def from_dict(cls, json_data):
         vocabularies = [Vocabulary.from_json(data) for data in json_data["subentries"]]
         return cls(Vocabulary.from_json(json_data), vocabularies)
 
-    def to_dict(self):
-        return dict(**self._main_vocabulary.to_dict(),
-                    subentries=[voc.to_dict() for voc in self._vocabularies])
+    def to_json(self):
+        return dict(**self._main_vocabulary.to_json(),
+                    subentries=[voc.to_json() for voc in self._vocabularies])
 
     def get_new_vocabulary(self):
-        self.current_index = random.randint(0, len(self.all_vocabularies) - 1)
-        self.all_vocabularies[self.current_index].set_random_direction()
-        return self.all_vocabularies[self.current_index].source
+        self.current_vocabulary = random.choices(
+            self.all_vocabularies,
+            weights=[voc.states.quote / 100 for voc in self.all_vocabularies]
+        )[0]
+
+        self.current_vocabulary.randomize_vocabulary_direction()
+        return self.current_vocabulary.source
 
     def next_try(self, name):
-        return self.all_vocabularies[self.current_index].next_try(name)
+        return self.current_vocabulary.next_try(name)
 
     @property
     def translation(self):
-        return self.all_vocabularies[self.current_index].translation
+        return self.current_vocabulary.translation
 
     @property
     def source(self):
-        return self.all_vocabularies[self.current_index].source
+        return self.current_vocabulary.source
 
     @property
     def translations(self):
-        return self.all_vocabularies[self.current_index].translations
+        return self.current_vocabulary.translations
 
     @property
     def sources(self):
-        return self.all_vocabularies[self.current_index].sources
+        return self.current_vocabulary.sources
 
     @property
     def target_example(self):
-        return self.all_vocabularies[self.current_index].target_example
+        return self.current_vocabulary.target_example
 
     @property
     def source_example(self):
-        return self.all_vocabularies[self.current_index].source_example
+        return self.current_vocabulary.source_example
+
+    @property
+    def states(self):
+        x = better_sum([voc.states for voc in self.all_vocabularies])
+        return x
 
     def __repr__(self):
         return self.all_vocabularies.__repr__()
 
 
-
 class VocabularyList:
     def __init__(self, vocabularies: List[TreeVocabulary]):
         self.vocabularies = vocabularies
-        self.current_index = 0
+        self.current_vocabulary = None
 
     @classmethod
     def from_dict(cls, json_data):
         vocabularies = [TreeVocabulary.from_dict(voc_data) for voc_data in json_data["entries"]]
         return cls(vocabularies)
 
-    def to_dict(self):
+    def to_json(self):
         return self.vocabularies
 
-    def get_new_vocabulary(self):
-        self.current_index = random.randint(0, len(self.vocabularies) - 1)
-        return self.vocabularies[self.current_index].get_new_vocabulary()
+    def get_new_vocabulary(self) -> str:
+        self.current_vocabulary = random.choices(
+            self.vocabularies,
+            weights=[voc.states.quote / 100 for voc in self.vocabularies]
+        )[0]
+        return self.current_vocabulary.get_new_vocabulary()
 
     def next_try(self, name):
-        return self.vocabularies[self.current_index].next_try(name)
+        return self.current_vocabulary.next_try(name)
+
+    def skip(self):
+        return self.current_vocabulary.translations
 
     def __iter__(self):
         """Iterate over vocabularies (sorted)"""
@@ -253,26 +311,26 @@ class Vocabularies(VocabularyList):
         self.random_direction = has_random_direction
 
     @classmethod
-    def from_file(cls, path, encoding="utf-8"):
-        with open(path, "r", encoding=encoding) as file:
-            return cls.from_dict(json.load(file))
-
-    def to_dict(self):
-        return dict(
-            entries=[voc.to_dict() for voc in self.vocabularies],
-            name=self.name,
-            random_direction=self.random_direction
-        )
-
-    @classmethod
     def from_dict(cls, json_data):
         vocabularies = [TreeVocabulary.from_dict(voc_data) for voc_data in json_data["entries"]]
         return cls(vocabularies, json_data["name"], json_data["random_direction"])
 
+    @classmethod
+    def from_file(cls, path, encoding="utf-8"):
+        with open(path, "r", encoding=encoding) as file:
+            return cls.from_dict(json.load(file))
+
+    def to_json(self):
+        return dict(
+            entries=[voc.to_json() for voc in self.vocabularies],
+            name=self.name,
+            random_direction=self.random_direction
+        )
+
 
 def main():
     a = Vocabularies.from_file("testvokabeln.json")
-    print(json.dumps(a.to_dict(), indent=2))
+    print(json.dumps(a.to_json(), indent=2))
 
 
 if __name__ == '__main__':

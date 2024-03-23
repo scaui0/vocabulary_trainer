@@ -1,5 +1,8 @@
 {
-  "trainer.ask.right": "Right",
+  "trainer.ask.skip": "Skip",
   "trainer.ask.wrong": "Wrong",
-  "trainer.ask.it_would": "It would be {}"
+
+  "trainer.ask.response.right": "Right!",
+  "trainer.ask.response.wrong": "Wrong! It would be {}",
+  "trainer.ask.response.skip": "The translation of {} would be {}"
 }
