@@ -8,16 +8,16 @@ from PyQt6.QtWidgets import QWidget, QApplication, QLineEdit, QHBoxLayout, QPush
 sys.path.append(r"C:\Users\Scaui\PycharmProjects\vokabel_trainer")
 
 from translator import Translator
-from vocabulary_trainer import Vocabularies
+from quiz_enchanter import Vocabularies
 
 
-def sequence_repr(sequence):
-    if len(sequence) == 0:
-        return repr(None)
-    elif len(sequence) == 1:
-        return repr(sequence[0])
+def iterator_to_chain(iterator, normal_chain=", ", last_connector=" or "):
+    if len(iterator) == 0:
+        return ""
+    elif len(iterator) == 1:
+        return iterator[1]
     else:
-        return repr(sequence)
+        return f"{normal_chain.join(iterator[:-1])}{last_connector}{iterator[-1]}"
 
 
 class VocabularyAskingWidget(QWidget):
@@ -80,14 +80,14 @@ class VocabularyAskingWidget(QWidget):
             else:
                 QMessageBox.information(self,
                                         self.tr("trainer.ask.wrong"),
-                                        self.tr("trainer.ask.response.wrong").format(sequence_repr(it_would))
+                                        self.tr("trainer.ask.response.wrong").format(iterator_to_chain(it_would))
                                         )
         else:  # Skip
             translation = self.vocabularies.skip()
             QMessageBox.information(
                 self,
                 self.tr("trainer.ask.skip"),
-                self.tr("trainer.ask.response.skip").format(repr(self.current_source), sequence_repr(translation))
+                self.tr("trainer.ask.response.skip").format(repr(self.current_source), iterator_to_chain(translation))
             )
 
         self.show_new_vocabulary()
@@ -98,10 +98,12 @@ class VocabularyAskingWidget(QWidget):
 
 
 def main():
+    print(iterator_to_chain([str(x) for x in range(10)]))
+
     app = QApplication([])
 
-    win = VocabularyAskingWidget()
-    win.show()
+    window = VocabularyAskingWidget()
+    window.show()
 
     sys.exit(app.exec())
 

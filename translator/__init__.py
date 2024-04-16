@@ -1,76 +1,50 @@
 import json
 from os import PathLike
 from pathlib import Path
-from typing import List, Dict
-
-
-class OneLanguageTranslator:
-    def __init__(self, path: PathLike, encoding="utf-8"):
-        with open(path, encoding=encoding) as file:
-            self.translations = json.load(file)
-
-    def translate(self, path: str):
-        if path in self.translations:
-            return self.translations[path]
-        else:
-            return path
-
-    tr = translate
-
-
-All_LANGUAGES = "all"
+from typing import List, Dict, LiteralString
 
 
 class LanguageNotSupportedError(BaseException):
     pass
 
 
-class BaseTranslator:
-    def __init__(self, translations: Dict[str, Dict[str, str]],
-                 default_language="en", supported_languages: str | List[str] = All_LANGUAGES):
-        self._translations = translations
+class LanguageFileNotFoundError(BaseException):
+    pass
+
+
+All_LANGUAGES = "all"
+
+
+class Translator:
+    def __init__[All_LANGUAGES: LiteralString["all"]] \
+                    (self, main_dir: PathLike | str,
+                     default_language="en",
+                     supported_languages: All_LANGUAGES | List[str] = All_LANGUAGES):
+
         self.current_language = default_language
         self.supported_languages = supported_languages
+        self.translation_dir = main_dir
+        self._translations = {}
 
         self.install(default_language)
 
     def install(self, language):
-        if language in self.supported_languages or self.supported_languages == All_LANGUAGES:
-            self.current_language = language
-        else:
-            raise LanguageNotSupportedError(f"{self.__class__.__name__} doesn't support language {language!r}")
+        if self.supported_languages != All_LANGUAGES and language not in self.supported_languages:
+            raise LanguageNotSupportedError(f"Language {language!r} is not supported!")
+
+        language_path = Path(self.translation_dir, f"{language}.json")
+
+        if not language_path.exists():
+            raise LanguageFileNotFoundError(
+                f"Translation file {language!r}.json not found in folder '{self.translation_dir}'"
+            )
+
+        with language_path.open("r", encoding="utf-8") as file:
+            self._translations[language] = json.load(file)
+        self.current_language = language
 
     def translate(self, key):
         try:
             return self._translations[self.current_language][key]
         except KeyError:
             return key
-
-
-class Translator(BaseTranslator):
-    def __init__(self, main_dir: PathLike | str, default_language="en", supported_languages: List[str] | str = All_LANGUAGES):
-        self.translation_dir = main_dir
-        super().__init__({}, default_language, supported_languages)
-
-    def install(self, language):
-        super().install(language)
-
-        try:
-            with Path(self.translation_dir, f"{self.current_language}.json").open("r", encoding="utf-8") as file:
-                self._translations[self.current_language] = json.load(file)
-        except FileNotFoundError:
-            text = f"Translation file {self.current_language!r}.json not found in folder '{self.translation_dir}'"
-            raise FileNotFoundError(text) from None
-
-
-def main():
-    translator = Translator(Path("translations"), "en", ["de", "en"])
-
-    for lang in ["de", "en"]:
-        translator.install(lang)
-        print(translator.translate("message.error.test"))
-        print(translator.translate("message.test.welcome"))
-
-
-if __name__ == "__main__":
-    main()
