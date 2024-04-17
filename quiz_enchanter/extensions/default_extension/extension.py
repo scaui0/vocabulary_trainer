@@ -1,4 +1,4 @@
-from datetime import datetime as DateTime, time as Time, date as Date
+from datetime import datetime, time, date
 from PyQt6.QtWidgets import QVBoxLayout, QLabel, QWidget, QComboBox, QLineEdit, QTimeEdit, QDateTimeEdit, QDateEdit
 
 from quiz_enchanter import QuizType
@@ -6,11 +6,11 @@ from quiz_enchanter import QuizType
 
 @QuizType("Select", "select")
 class Select(QWidget):
-    def __init__(self, question, options, right_option, parent=None):
+    def __init__(self, question, options, right, parent=None):
         super().__init__(parent=parent)
         self.question = question
         self.options = options
-        self.right_option = right_option
+        self.right = right
 
         self.combobox = QComboBox(self)
         self.combobox.addItems(options)
@@ -27,12 +27,12 @@ class Select(QWidget):
         return cls(
             json_data["question"],
             json_data["options"],
-            json_data["right_option"]
+            json_data["right"]
         )
 
     @property
     def is_right(self):
-        return self.options[self.combobox.currentIndex()] == self.right_option
+        return self.options[self.combobox.currentIndex()] == self.right
 
 
 @QuizType("Match", "match")
@@ -62,7 +62,7 @@ class Time(QTimeEdit):
     @classmethod
     def from_json(cls, json_data):
         return cls(
-            Time.fromisoformat(json_data["time"])
+            time.fromisoformat(json_data["time"])
         )
 
     @property
@@ -71,7 +71,7 @@ class Time(QTimeEdit):
 
 
 @QuizType("Datetime", "datetime")
-class Time(QDateTimeEdit):
+class DateTime(QDateTimeEdit):
     def __init__(self, required_datetime, parent=None):
         super().__init__(parent=parent)
 
@@ -80,7 +80,7 @@ class Time(QDateTimeEdit):
     @classmethod
     def from_json(cls, json_data):
         return cls(
-            DateTime.fromisoformat(json_data["datetime"])
+            datetime.fromisoformat(json_data["datetime"])
         )
 
     @property
@@ -89,7 +89,7 @@ class Time(QDateTimeEdit):
 
 
 @QuizType("Date", "date")
-class Time(QDateEdit):
+class Date(QDateEdit):
     def __init__(self, required_date, parent=None):
         super().__init__(parent=parent)
 
@@ -98,12 +98,9 @@ class Time(QDateEdit):
     @classmethod
     def from_json(cls, json_data):
         return cls(
-            Date.fromisoformat(json_data["date"])
+            date.fromisoformat(json_data["date"])
         )
 
     @property
     def is_right(self):
         return self.date() == self.required_date
-
-
-

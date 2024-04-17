@@ -12,10 +12,10 @@ class JsonLoader:
         json.dump(vocabularies.json, file, encoding=encoding, indent=indent)
 
     def loads(self, string):
-        return Vocabularies.from_json(json.loads(string))
+        return Vocabularies.from_json(json.loads(string), [])
 
     def load(self, file, encoding="utf-8"):
-        return Vocabularies.from_json(json.load(file, encoding=encoding))
+        return Vocabularies.from_json(json.load(file, encoding=encoding), [])
 
 
 class CSVLoader:

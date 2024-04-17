@@ -1,4 +1,26 @@
 {
   "name": "Select",
-  "file": "extension.py"
+  "file": "extension.py",
+  "quiz_types": [
+    {
+      "name": "Select",
+      "id": "select",
+      "class": "Select"
+    },
+    {
+      "name": "Match",
+      "id": "match",
+      "class": "Match"
+    },
+    {
+      "name": "Time",
+      "id": "time",
+      "class": "Time"
+    },
+    {
+      "name": "DateTime",
+      "id": "datetime",
+      "class": "DateTime"
+    }
+  ]
 }

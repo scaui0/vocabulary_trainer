@@ -45,7 +45,7 @@ def test_state_mod():
 
 
 def test_from_json():
-    assert Tries.from_json(dict(right_tries=1, wrong_tries=2)) == Tries(1, 2)
+    assert Tries.from_json(dict(right_tries=1, wrong_tries=2), []) == Tries(1, 2)
 
 
 def test_to_json():
