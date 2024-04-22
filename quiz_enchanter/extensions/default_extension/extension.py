@@ -1,4 +1,5 @@
 from datetime import datetime, time, date
+
 from PyQt6.QtWidgets import QVBoxLayout, QLabel, QWidget, QComboBox, QLineEdit, QTimeEdit, QDateTimeEdit, QDateEdit
 
 from quiz_enchanter import QuizType
@@ -23,11 +24,12 @@ class Select(QWidget):
         self.setLayout(main_layout)
 
     @classmethod
-    def from_json(cls, json_data):
+    def from_json(cls, json_data, parent=None):
         return cls(
             json_data["question"],
             json_data["options"],
-            json_data["right"]
+            json_data["right"],
+            parent
         )
 
     @property
@@ -104,3 +106,5 @@ class Date(QDateEdit):
     @property
     def is_right(self):
         return self.date() == self.required_date
+
+print(Plugin.plugins)
