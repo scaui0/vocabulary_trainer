@@ -106,5 +106,3 @@ class Date(QDateEdit):
     @property
     def is_right(self):
         return self.date() == self.required_date
-
-print(Plugin.plugins)
