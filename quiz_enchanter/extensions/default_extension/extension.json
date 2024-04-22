@@ -1,26 +1,5 @@
 {
-  "name": "Select",
-  "file": "extension.py",
-  "quiz_types": [
-    {
-      "name": "Select",
-      "id": "select",
-      "class": "Select"
-    },
-    {
-      "name": "Match",
-      "id": "match",
-      "class": "Match"
-    },
-    {
-      "name": "Time",
-      "id": "time",
-      "class": "Time"
-    },
-    {
-      "name": "DateTime",
-      "id": "datetime",
-      "class": "DateTime"
-    }
-  ]
+  "name": "Default",
+  "plugin_id": "default",
+  "file": "extension.py"
 }
