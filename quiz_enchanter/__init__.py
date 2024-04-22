@@ -25,7 +25,7 @@ class Plugin:
             extension_modul = module_from_spec(spec)
             spec.loader.exec_module(extension_modul)
 
-        return cls([])  # How to find QuizTypes in extension_modul
+        return cls([])  # How to find QuizTypes in extension_modul?
 
 
 class QuizType:
