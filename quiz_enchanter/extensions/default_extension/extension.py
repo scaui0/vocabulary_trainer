@@ -2,11 +2,17 @@ from datetime import datetime, time, date
 
 from PyQt6.QtWidgets import QVBoxLayout, QLabel, QWidget, QComboBox, QLineEdit, QTimeEdit, QDateTimeEdit, QDateEdit
 
-from quiz_enchanter import QuizType
+from quiz_enchanter import Plugin
 
 
-@QuizType("Select", "select")
+plugin = Plugin("default")
+
+
+@plugin.quiz_type("Select", "select")
 class Select(QWidget):
+    NAME = "Select"
+    ID = "select"
+
     def __init__(self, question, options, right, parent=None):
         super().__init__(parent=parent)
         self.question = question
@@ -37,8 +43,11 @@ class Select(QWidget):
         return self.options[self.combobox.currentIndex()] == self.right
 
 
-@QuizType("Match", "match")
+@plugin.quiz_type("Match", "match")
 class Match(QLineEdit):
+    NAME = "Match"
+    ID = "match"
+
     def __init__(self, right, parent=None):
         super().__init__(parent=parent)
         self.right = right
@@ -54,8 +63,11 @@ class Match(QLineEdit):
         return self.text() == self.right
 
 
-@QuizType("Time", "time")
+@plugin.quiz_type("Time", "time")
 class Time(QTimeEdit):
+    NAME = "Time"
+    ID = "time"
+
     def __init__(self, required_time, parent=None):
         super().__init__(parent=parent)
 
@@ -72,8 +84,11 @@ class Time(QTimeEdit):
         return self.time() == self.required_time
 
 
-@QuizType("Datetime", "datetime")
+@plugin.quiz_type("DateTime", "datetime")
 class DateTime(QDateTimeEdit):
+    NAME = "DateTime"
+    Id = "datetime"
+
     def __init__(self, required_datetime, parent=None):
         super().__init__(parent=parent)
 
@@ -90,8 +105,11 @@ class DateTime(QDateTimeEdit):
         return self.dateTime() == self.required_datetime
 
 
-@QuizType("Date", "date")
+@plugin.quiz_type("Date", "date")
 class Date(QDateEdit):
+    NAME = "Date"
+    Id = "date"
+
     def __init__(self, required_date, parent=None):
         super().__init__(parent=parent)
 
@@ -106,5 +124,3 @@ class Date(QDateEdit):
     @property
     def is_right(self):
         return self.date() == self.required_date
-
-print(Plugin.plugins)
