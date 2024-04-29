@@ -46,7 +46,7 @@ class PluginManager:
         with open(Path(path_to_main_folder) / "extension.json", encoding="utf-8") as plugin_config_file:
             plugin_config = json.load(plugin_config_file)
 
-            plugin_id = plugin_config["plugin_id"]
+            plugin_id = plugin_config["id"]
 
             plugin_main_file = Path(path_to_main_folder) / plugin_config["file"]
 

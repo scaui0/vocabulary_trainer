@@ -19,11 +19,9 @@ class Window(QMainWindow):
         self.quiz_widget = QStackedWidget(self)
 
         self.current_quiz_index = 0
-        self.quizzes = []
         with open(CURRENT_PATH / "quiz.json", encoding="utf-8") as file:
             for json_data in json.load(file)["quizzes"]:
                 quiz = quiz_type_by_id(json_data["type"]).from_json(json_data)
-                self.quizzes.append(quiz)
                 self.quiz_widget.addWidget(quiz)
 
 

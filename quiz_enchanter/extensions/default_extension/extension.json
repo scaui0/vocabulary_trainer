@@ -1,5 +1,5 @@
 {
   "name": "Default",
-  "plugin_id": "default",
+  "id": "default",
   "file": "extension.py"
 }
