@@ -8,7 +8,7 @@ from quiz_enchanter import Plugin
 plugin = Plugin("default")
 
 
-@plugin.quiz_type("Select", "select")
+@plugin.quiz_type("Select", "select").gui
 class Select(QWidget):
     NAME = "Select"
     ID = "select"
@@ -43,7 +43,7 @@ class Select(QWidget):
         return self.options[self.combobox.currentIndex()] == self.right
 
 
-@plugin.quiz_type("Match", "match")
+@plugin.quiz_type("Match", "match").gui
 class Match(QLineEdit):
     NAME = "Match"
     ID = "match"
@@ -63,7 +63,7 @@ class Match(QLineEdit):
         return self.text() == self.right
 
 
-@plugin.quiz_type("Time", "time")
+@plugin.quiz_type("Time", "time").gui
 class Time(QTimeEdit):
     NAME = "Time"
     ID = "time"
@@ -84,7 +84,7 @@ class Time(QTimeEdit):
         return self.time() == self.required_time
 
 
-@plugin.quiz_type("DateTime", "datetime")
+@plugin.quiz_type("DateTime", "datetime").gui
 class DateTime(QDateTimeEdit):
     NAME = "DateTime"
     Id = "datetime"
@@ -105,7 +105,7 @@ class DateTime(QDateTimeEdit):
         return self.dateTime() == self.required_datetime
 
 
-@plugin.quiz_type("Date", "date")
+@plugin.quiz_type("Date", "date").gui
 class Date(QDateEdit):
     NAME = "Date"
     Id = "date"
