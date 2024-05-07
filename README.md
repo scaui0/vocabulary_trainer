@@ -48,7 +48,7 @@ Here is a step-by-step guide:
 4. Then you need to add some questions.
    A question is an object in the `quizzes` array.
    You need to add a `type` to each question.
-   Then you can add some more information which will be passed to the appropriate quiz type.
+   Then you can add some more information, which will be passed to the appropriate quiz type.
    
    There are three basic quiz types you can use:
 
@@ -89,7 +89,7 @@ Here is a step-by-step guide:
 
 
 ## Plugin Development
-Not enough quiz types? Let's create your own plugin and define your own Quit-Types!
+Not enough quiz types? Create your own plugin and define your own quiz types!
 
 A plugin is a folder containing at least one file: A configuration file `extension.json`.
 This plugin can't register quiz types.

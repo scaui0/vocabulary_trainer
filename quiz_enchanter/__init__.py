@@ -11,6 +11,7 @@ CURRENT_PATH = Path(__file__).parent
 
 class AlreadyRegisteredError(BaseException):
     """AlreadyRegisteredError"""
+
     def __init__(self, type_, thing):
         self.type_ = type_
         self.thing = thing
@@ -21,6 +22,7 @@ class AlreadyRegisteredError(BaseException):
 
 class NotRegisteredError(BaseException):
     """NotRegisteredError"""
+
     def __init__(self, type_, thing):
         self.type_ = type_
         self.thing = thing
@@ -29,11 +31,29 @@ class NotRegisteredError(BaseException):
         return f"{self.type_} {self.thing!r} is not registered!"
 
 
-class BaseModel:
+class PluginLoadError(BaseException):
+    def __init__(self, reason):
+        self.reason = reason
+
+    def __str__(self):
+        return f"Can't load plugin: {self.reason}!"
+
+
+class InvalidJSONDataError(BaseException):
+    pass
+
+
+class EmptyModel:
+    def __init__(self, json_data):
+        pass
+
     @property
     def is_right(self):
         return True
 
+
+def base_cli(model):
+    return True
 
 
 class QuizType:
@@ -41,8 +61,8 @@ class QuizType:
         self.name = name
         self.identifier = identifier
 
-        self.model_class = model
-        self.cli_func = cli
+        self.model_class = model if model is not None else EmptyModel
+        self.cli_func = cli if cli is not None else base_cli
 
     def cli(self, func):
         self.cli_func = func
@@ -128,12 +148,23 @@ class PluginManager:
     @classmethod
     def plugin_from_main_folder(cls, path_to_main_folder):
         """Load a plugin from the main folder. This requires that there is a file, called 'extension.json'."""
+        extension_file = Path(path_to_main_folder) / "extension.json"
+
+        if not extension_file.exists():
+            raise PluginLoadError("No 'extension.json'")
+
         with open(Path(path_to_main_folder) / "extension.json", encoding="utf-8") as plugin_config_file:
             plugin_config = json.load(plugin_config_file)
 
-            plugin_id = plugin_config["id"]
+            try:
+                plugin_id = plugin_config["id"]
+            except KeyError:
+                raise PluginLoadError("No id specified in 'extension.json'")
 
-            plugin_python_files = (Path(path_to_main_folder) / file_name for file_name in plugin_config["files"])
+            plugin_python_files = [Path(path_to_main_folder) / file_name for file_name in plugin_config["files"]]
+
+            if not all((path.exists() for path in plugin_python_files)):
+                raise PluginLoadError(f"Invalid file referred in 'extension.json' of plugin {plugin_id!r}")
 
             for plugin_python_file in plugin_python_files:
                 # Load plugin_python_file as module into extension_modul
@@ -145,7 +176,6 @@ class PluginManager:
         cls.activate_plugin(plugin_id)
 
         return cls.all_plugins[plugin_id]  # The Plugin is already registered. It registers itself on creation
-
 
     @classmethod
     @property
@@ -165,12 +195,16 @@ class PluginManager:
 
 def execute_quiz_as_cli_from_quiz_file(quiz_file_path):
     with open(quiz_file_path, encoding="utf-8") as quiz_file:
-        quiz_config = json.load(quiz_file)
+        try:
+            quiz_config = json.load(quiz_file)
+        except json.decoder.JSONDecodeError:
+            print("Invalid JSON file!")
+            return
 
-    name = quiz_config["name"]
+    name = quiz_config.get("name", "No name specified!")
 
     quiz_clis_and_models = []
-    for quiz_data in quiz_config["quizzes"]:
+    for quiz_data in quiz_config.get("quizzes", []):
         model = PluginManager.all_quiz_types[quiz_data["type"]].model_class(quiz_data)
         cli = PluginManager.all_quiz_types[quiz_data["type"]].cli_func
 
@@ -185,4 +219,5 @@ def execute_quiz_as_cli_from_quiz_file(quiz_file_path):
         print("That's right!" if is_right else "That's wrong! :(")
         print()
 
-    print(f"Total: {int(right_tries / len(quiz_clis_and_models) * 100)}% {right_tries}/{len(quiz_clis_and_models)}")
+    total_percent = int(right_tries / len(quiz_clis_and_models) * 100) if right_tries != 0 else 0
+    print(f"Total: {total_percent}% {right_tries}/{len(quiz_clis_and_models)}")

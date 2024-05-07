@@ -13,7 +13,8 @@ args = parser.parse_args()
 
 file_argument = args.file
 if file_argument is None:
-    quiz_name = input("Quiz file (in quizzes folder): ")
+    # quiz_name = input("Quiz file (in quizzes folder): ")
+    quiz_name = "fail"
     file_argument = CURRENT_PATH / f"quizzes/{quiz_name}"
 
 
