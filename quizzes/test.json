@@ -1,0 +1,21 @@
+{
+  "name": "Test Quizzes",
+  "quizzes": [
+    {
+      "type": "match",
+      "question": "Please answer 'HI'!",
+      "right": "HI"
+    },
+    {
+      "type": "bool",
+      "question": "This is true!",
+      "right": true
+    },
+    {
+      "type": "select",
+      "question": "The first is the right!",
+      "options": ["1", "2", "3", "4"],
+      "right": 0
+    }
+  ]
+}

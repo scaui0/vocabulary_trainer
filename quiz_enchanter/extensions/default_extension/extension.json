@@ -1,5 +1,9 @@
 {
-  "name": "Default",
   "id": "default",
-  "file": "extension.py"
+  "files": [
+    "extension.py",
+    "match_extension.py",
+    "select_extension.py",
+    "bool_extension.py"
+  ]
 }

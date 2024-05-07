@@ -1,6 +1,0 @@
-{
-  "python_file": "main.py",
-  "loader_class": "Loader",
-  "single_selector_class": "Single",
-  "multi_selector_class": "Multi"
-}
