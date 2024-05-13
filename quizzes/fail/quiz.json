@@ -1,0 +1,11 @@
+{
+  "name": "Fail",
+  "quizzes": [
+    {
+      "type": "fail",
+      "options": [1, 2, 3, 4, 5, 6],
+      "right": 0,
+      "question": "Select the first!"
+    }
+  ]
+}
