@@ -1,18 +1,19 @@
 import json
+import logging
 from importlib.util import spec_from_file_location, module_from_spec
 from pathlib import Path
-
-# TODO: Add better classproperty!
-#  If you read this and have an idea how to implement this, please create an issue!
-
 
 CURRENT_PATH = Path(__file__).parent
 
 
+logger = logging.getLogger(__name__)
+
+
 class AlreadyRegisteredError(BaseException):
     """AlreadyRegisteredError"""
-    def __init__(self, type_, thing):
-        self.type_ = type_
+
+    def __init__(self, thing, type_=None):
+        self.type_ = thing.__class__.__name__ if type is None else type_
         self.thing = thing
 
     def __str__(self):
@@ -21,8 +22,9 @@ class AlreadyRegisteredError(BaseException):
 
 class NotRegisteredError(BaseException):
     """NotRegisteredError"""
-    def __init__(self, type_, thing):
-        self.type_ = type_
+
+    def __init__(self, thing, type_=None):
+        self.type_ = thing.__class__.__name__ if type is None else type_
         self.thing = thing
 
     def __str__(self):
@@ -33,7 +35,6 @@ class BaseModel:
     @property
     def is_right(self):
         return True
-
 
 
 class QuizType:
@@ -54,26 +55,28 @@ class QuizType:
 
 
 class Plugin:
+    GLOBAL_PLUGINS = {}
+
     def __init__(self, identifier, name):
         self.identifier = identifier
         self.name = name
         self.quiz_types = {}
 
-        if identifier in PluginManager.all_plugins:
-            raise AlreadyRegisteredError("Plugin", identifier)
+        if identifier in Plugin.GLOBAL_PLUGINS:
+            raise AlreadyRegisteredError(identifier)
 
-        PluginManager.add_plugin(self)
+        Plugin.GLOBAL_PLUGINS[identifier] = self
 
     @classmethod
     def get_plugin(cls, identifier):
-        if identifier not in PluginManager.all_plugins:
-            raise NotRegisteredError("Plugin", identifier)
+        if identifier not in Plugin.GLOBAL_PLUGINS:
+            raise NotRegisteredError(identifier, "plugin")
         else:
-            return PluginManager.all_plugins[identifier]
+            return Plugin.GLOBAL_PLUGINS[identifier]
 
     def register_quiz_type(self, identifier, name, model=None, cli=None):
         if identifier in self.quiz_types:
-            raise AlreadyRegisteredError("QuizType", identifier)
+            raise AlreadyRegisteredError(identifier)
         else:
             self.quiz_types[identifier] = QuizType(
                 name=name,
@@ -93,37 +96,60 @@ class Plugin:
 
 class PluginManager:
     """Manager to manage plugins."""
-    activated_plugins = {}
-    deactivated_plugins = {}
+    def __init__(self, activated_plugins=None, deactivated_plugins=None):
+        if deactivated_plugins is None:
+            deactivated_plugins = {}
+        self.deactivated_plugins = deactivated_plugins
 
-    @classmethod
-    def activate_plugin(cls, plugin_id):  # Maybe add Errorhandling?
-        """Activate the plugin whose plugin_id is equals to plugin_id."""
-        if plugin_id in cls.deactivated_plugins:
-            cls.activated_plugins[plugin_id] = cls.deactivated_plugins.pop(plugin_id)
+        if activated_plugins is None:
+            activated_plugins = {}
+        self.activated_plugins = activated_plugins
 
-    @classmethod
-    def deactivate_plugin(cls, plugin_id):  # Maybe add Errorhandling too?
-        """Deactivate the plugin whose plugin_id is equals to plugin_id."""
-        if plugin_id in cls.deactivated_plugins:
-            cls.deactivated_plugins[plugin_id] = cls.activated_plugins.pop(plugin_id)
+    def activate_plugin(self, plugin_id):
+        """Activate the plugin whose identifier is equals to plugin_id."""
+        if plugin_id in self.deactivated_plugins:
+            self.activated_plugins[plugin_id] = self.deactivated_plugins.pop(plugin_id)
+            # Move from activated to deactivated plugins
 
-    @classmethod
-    def remove_plugin(cls, plugin_id):
+        elif plugin_id in Plugin.GLOBAL_PLUGINS:
+            self.activated_plugins[plugin_id] = Plugin.GLOBAL_PLUGINS[plugin_id]
+
+    def deactivate_plugin(self, plugin_id):
+        """Deactivate the plugin whose identifier is equals to plugin_id."""
+        if plugin_id in self.activated_plugins:
+            self.deactivated_plugins[plugin_id] = self.activated_plugins.pop(plugin_id)
+            # Move from deactivated to activated plugins
+
+        elif plugin_id in Plugin.GLOBAL_PLUGINS:
+            self.deactivated_plugins[plugin_id] = Plugin.GLOBAL_PLUGINS[plugin_id]
+
+    def remove_plugin(self, plugin_id):
         """Remove the plugin, whose plugin_id is equals to plugin_id."""
-        if plugin_id in cls.activated_plugins:
-            del cls.activated_plugins[plugin_id]
+        if plugin_id in self.activated_plugins:
+            del self.activated_plugins[plugin_id]
 
-        elif plugin_id in cls.deactivated_plugins:
-            del cls.deactivated_plugins[plugin_id]
+        elif plugin_id in self.deactivated_plugins:
+            del self.deactivated_plugins[plugin_id]
 
-    @classmethod
-    def add_plugin(cls, plugin, activate=False):
-        """Register a Plugin. If the activate flag is set, the plugin will be activated."""
+    def add_plugin(self, plugin, activate=False):
+        """Add a Plugin. If the activate flag is set, the plugin will be activated."""
         if activate:
-            cls.activated_plugins[plugin.identifier] = plugin
+            self.activated_plugins[plugin.identifier] = plugin
         else:
-            cls.deactivated_plugins[plugin.identifier] = plugin
+            self.deactivated_plugins[plugin.identifier] = plugin
+
+    @property
+    def all_plugins(self):
+        return self.activated_plugins | self.deactivated_plugins
+
+    @property
+    def all_activated_quiz_types(self):
+        """All quiz types of all activated plugins"""
+        return {
+            identifier: quiz_type
+            for plugin in self.activated_plugins.values()
+            for identifier, quiz_type in plugin.quiz_types.items()
+        }
 
     @classmethod
     def plugin_from_main_folder(cls, path_to_main_folder):
@@ -142,47 +168,72 @@ class PluginManager:
                 # Execute modul
                 spec.loader.exec_module(extension_modul)
 
-        cls.activate_plugin(plugin_id)
-
-        return cls.all_plugins[plugin_id]  # The Plugin is already registered. It registers itself on creation
-
-
-    @classmethod
-    @property
-    def all_plugins(cls):
-        return cls.activated_plugins | cls.deactivated_plugins
-
-    @classmethod
-    @property
-    def all_quiz_types(cls):
-        """All quiz types of all activated plugins"""
-        return {
-            identifier: quiz_type
-            for plugin in cls.activated_plugins.values()
-            for identifier, quiz_type in plugin.quiz_types.items()
-        }
+        if plugin_id not in Plugin.GLOBAL_PLUGINS:
+            raise NotRegisteredError(plugin_id, "Plugin")
+        return Plugin.GLOBAL_PLUGINS[plugin_id]  # The Plugin is already registered. It registers itself on creation
 
 
-def execute_quiz_as_cli_from_quiz_file(quiz_file_path):
-    with open(quiz_file_path, encoding="utf-8") as quiz_file:
+def execute_quiz_as_cli_from_quiz_file(quiz_file_path, plugin_manager):
+    quiz_file_path = Path(quiz_file_path)
+    if not quiz_file_path.exists():
+        raise FileNotFoundError(f"File {quiz_file_path} doesn't exists!")
+
+    with quiz_file_path.open("r", encoding="utf-8") as quiz_file:
         quiz_config = json.load(quiz_file)
 
-    name = quiz_config["name"]
+    quiz_name = quiz_config["name"]
 
     quiz_clis_and_models = []
     for quiz_data in quiz_config["quizzes"]:
-        model = PluginManager.all_quiz_types[quiz_data["type"]].model_class(quiz_data)
-        cli = PluginManager.all_quiz_types[quiz_data["type"]].cli_func
+        if "type" not in quiz_data:
+            raise KeyError("Quiz data has no key 'type'!")
 
-        quiz_clis_and_models.append((cli, model))
+        quiz_type_as_string = quiz_data["type"]
+        if quiz_type_as_string not in plugin_manager.all_activated_quiz_types:
+            raise NotRegisteredError(quiz_type_as_string, "Quiz type")
+
+        quiz_type = plugin_manager.all_activated_quiz_types[quiz_type_as_string]
+
+        model = quiz_type.model_class(quiz_data)
+        cli = quiz_type.cli_func
+        quiz_clis_and_models.append((model, cli))
+
+        logger.debug(f"Loaded model and cli for quiz type {quiz_type_as_string}.")
+
 
     right_tries = 0
-    print(f"Welcome to {name!r}!\nPlease answer the following questions!\n")
-    for cli, model in quiz_clis_and_models:
+    print(f"Welcome to {quiz_name!r}!\nPlease answer the following questions!\n")
+    for model, cli in quiz_clis_and_models:
         is_right = cli(model)
-
         right_tries += is_right
+
         print("That's right!" if is_right else "That's wrong! :(")
         print()
 
     print(f"Total: {int(right_tries / len(quiz_clis_and_models) * 100)}% {right_tries}/{len(quiz_clis_and_models)}")
+
+
+def execute_quiz_as_cli(path):
+    file = Path(path)
+    plugin_folders = [CURRENT_PATH / "extensions/default_extension"]
+
+    if file.is_dir():
+        quiz_path = file / "quiz.json"
+
+        plugin_main_path = file / "plugins"
+        if plugin_main_path.exists():
+            plugin_folders += plugin_main_path.iterdir()
+    else:
+        quiz_path = file
+
+    plugin_manager = PluginManager()
+    for plugin_path in plugin_folders:
+        plugin_manager.add_plugin(
+            PluginManager.plugin_from_main_folder(plugin_path),
+            activate=True
+        )
+
+    if quiz_path.exists():
+        execute_quiz_as_cli_from_quiz_file(quiz_path, plugin_manager)
+    else:
+        print(f"No quiz found at {quiz_path}!")

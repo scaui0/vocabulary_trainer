@@ -16,6 +16,18 @@
       "question": "The first is the right!",
       "options": ["1", "2", "3", "4"],
       "right": 0
+    },
+    {
+      "type": "datetime",
+      "question": "Please answer 2000-01-01!",
+      "right": "2000-01-01",
+      "show_format_information": true
+    },
+    {
+      "type": "datetime",
+      "question": "How looks a three-day period in ISO 8601?",
+      "right": "P3D",
+      "show_format_information": false
     }
   ]
 }

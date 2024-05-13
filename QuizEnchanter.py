@@ -1,40 +1,37 @@
 #!usr/bin/env python3
+import logging
 from argparse import ArgumentParser
 from pathlib import Path
 
-from quiz_enchanter import PluginManager, execute_quiz_as_cli_from_quiz_file
+from quiz_enchanter import execute_quiz_as_cli
 
 CURRENT_PATH = Path(__file__).parent
 
+QUIZ_ALWAYS_TO_OPEN = None
+
 parser = ArgumentParser("QuizEnchanter", description="A quiz program")
 parser.add_argument("file", nargs='?', help="optional, absolute path to a quiz file")
+parser.add_argument("-d", "--debug", action='store_true', help="print debug messages")
 
 args = parser.parse_args()
 
+if args.debug:
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="[%(levelname)s][%(asctime)s](%(name)s) - %(message)s",
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+
+logger = logging.getLogger(__name__)
+
 file_argument = args.file
-if file_argument is None:
+if QUIZ_ALWAYS_TO_OPEN is not None:
+    file_argument = QUIZ_ALWAYS_TO_OPEN
+    logger.info(f"Loaded quiz from file {QUIZ_ALWAYS_TO_OPEN} because QUIZ_ALWAYS_TO_OPEN contains this path.")
+
+elif file_argument is None:
     quiz_name = input("Quiz file (in quizzes folder): ")
     file_argument = CURRENT_PATH / f"quizzes/{quiz_name}"
 
 
-file = Path(file_argument)
-plugin_folders = [CURRENT_PATH / "quiz_enchanter/extensions/default_extension"]
-
-if file.is_dir():
-    quiz_path = file / "quiz.json"
-
-    plugin_main_path = file / "plugins"
-    if plugin_main_path.exists():
-        plugin_folders += plugin_main_path.iterdir()
-else:
-    quiz_path = file
-
-
-for plugin_path in plugin_folders:
-    PluginManager.plugin_from_main_folder(plugin_path)
-
-
-if quiz_path.exists():
-    execute_quiz_as_cli_from_quiz_file(quiz_path)
-else:
-    print(f"No quiz found at {quiz_path}!")
+execute_quiz_as_cli(file_argument)
