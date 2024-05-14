@@ -1,11 +1,11 @@
-from quiz_enchanter import Plugin, EmptyModel
+from quiz_enchanter import Plugin, BaseModel
 
 plugin = Plugin.get_plugin("default")
 bool_quiz_type = plugin.quiz_type("bool", "Bool")
 
 
 @bool_quiz_type.model
-class BoolModel(EmptyModel):
+class BoolModel(BaseModel):
     def __init__(self, json_data):
         super().__init__(json_data)
         self.question = json_data["question"]
