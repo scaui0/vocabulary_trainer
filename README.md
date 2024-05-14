@@ -52,7 +52,7 @@ Here is a step-by-step guide:
 4. Then you need to add some questions.
    A question is an object in the `quizzes` array.
    You need to add a `type` to each question.
-   Then you can add some more information which will be passed to the appropriate quiz type.
+   Then you can add some more information, that will be passed to the appropriate quiz type.
 
    There are four basic quiz types you can use:
    
@@ -84,7 +84,7 @@ Here is a step-by-step guide:
      | question | The question (actually a statement)              |
      | right    | Indicates whether the question’s answer is right |
    
-   * `datetime`
+   * `datetime`:
      This quiz type asks the user for a specific date.
      This date uses the ISO 8601 format!
      Simplified that is the format: `YYYY-MM-DDThh:mm:ss`.
@@ -96,6 +96,14 @@ Here is a step-by-step guide:
      | question                | The question                                                       |
      | right                   | The right date(s) in ISO 8601 format                               |
      | show_format_information | Shows a message about the date format to the user (default `true`) |
+   
+   * `timeperiod`:
+     A timeperiod in ISO 8601.
+   
+     | Argument | Information           |
+     |----------|-----------------------|
+     | question | The question          |
+     | right    | The right time period |
 
    Here is a short example:
    ```json

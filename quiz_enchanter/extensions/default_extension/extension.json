@@ -5,6 +5,7 @@
     "match_extension.py",
     "select_extension.py",
     "bool_extension.py",
-    "date_extension.py"
+    "date_extension.py",
+    "timeperiod_extension.py"
   ]
 }
