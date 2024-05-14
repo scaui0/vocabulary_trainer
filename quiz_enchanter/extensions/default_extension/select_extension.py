@@ -7,7 +7,6 @@ select_quiz_type = plugin.quiz_type("select", "Select")
 @select_quiz_type.model
 class SelectModel(BaseModel):
     def __init__(self, json_data):
-        super().__init__(json_data)
         self.question = json_data["question"]
         self.options = json_data["options"]
 

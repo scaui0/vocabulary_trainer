@@ -7,7 +7,6 @@ bool_quiz_type = plugin.quiz_type("bool", "Bool")
 @bool_quiz_type.model
 class BoolModel(BaseModel):
     def __init__(self, json_data):
-        super().__init__(json_data)
         self.question = json_data["question"]
         self.right = json_data["right"]
 
