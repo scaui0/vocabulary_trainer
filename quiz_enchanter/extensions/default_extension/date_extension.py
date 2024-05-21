@@ -10,7 +10,7 @@ BASIC_ISO_8601_FORMAT = "YYYY-MM-DDThh:mm:ss"
 
 
 @datetime_quiz_type.model
-class DateModel(BaseModel):
+class DateTimeModel(BaseModel):
     def __init__(self, json_data):
         self.question = json_data["question"]
         right_from_json = json_data["right"]
@@ -19,7 +19,7 @@ class DateModel(BaseModel):
         # Multiple right are allowed
         self.right = [datetime.fromisoformat(datetime_string) for datetime_string in right_datetimes_as_strings]
 
-        self.show_format_information = json_data.get("show_format_information", False)
+        self.show_format_information = json_data.get("show_format_information", True)
 
         self.selection = None
 

@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from isodate import parse_duration
 
 from quiz_enchanter import Plugin, BaseModel
@@ -13,13 +11,16 @@ class TimePeriodModel(BaseModel):
     def __init__(self, json_data):
         self.question = json_data["question"]
 
-        self.right = parse_duration(json_data["right"])
+        right_field_from_json = json_data["right"]
+        right_as_strings = right_field_from_json if isinstance(right_field_from_json, list) else [right_field_from_json]
+        # Multiple right answers are allowed!
+        self.right = [parse_duration(period_as_string) for period_as_string in right_as_strings]
 
         self.selection = None
 
     @property
     def is_right(self):
-        return self.selection == self.right
+        return self.selection in self.right
 
 
 @date_period_quiz_type.cli

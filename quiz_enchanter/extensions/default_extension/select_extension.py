@@ -10,7 +10,7 @@ class SelectModel(BaseModel):
         self.question = json_data["question"]
         self.options = json_data["options"]
 
-        right = json_data["right"]
+        right = json_data.get("right", None)
         self.right = right if isinstance(right, list) else [right]  # Multiple right answers are allowed!
 
         self.selection = None

@@ -1,5 +1,0 @@
-{
-  "name": "Fail extension",
-  "id": "fail",
-  "files": ["extension.py"]
-}

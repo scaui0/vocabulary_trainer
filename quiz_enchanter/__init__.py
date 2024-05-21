@@ -5,7 +5,6 @@ from pathlib import Path
 
 CURRENT_PATH = Path(__file__).parent
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -31,14 +30,22 @@ class NotRegisteredError(BaseException):
         return f"{self.type_} {self.thing!r} is not registered!"
 
 
-class BaseModel:
+class BaseModel:  # It's redundant, maybe remove it in later versions?
     @property
     def is_right(self):
         return True
 
 
+def base_cli():
+    return True
+
+
+class DictModel(dict, BaseModel):
+    pass
+
+
 class QuizType:
-    def __init__(self, name, identifier, model=None, cli=None):
+    def __init__(self, name, identifier, model=DictModel, cli=base_cli):
         self.name = name
         self.identifier = identifier
 
@@ -96,6 +103,7 @@ class Plugin:
 
 class PluginManager:
     """Manager to manage plugins."""
+
     def __init__(self, activated_plugins=None, deactivated_plugins=None):
         if deactivated_plugins is None:
             deactivated_plugins = {}
@@ -186,7 +194,7 @@ def execute_quiz_as_cli_from_quiz_file(quiz_file_path, plugin_manager):
     quiz_clis_and_models = []
     for quiz_data in quiz_config["quizzes"]:
         if "type" not in quiz_data:
-            raise KeyError("Quiz data has no key 'type'!")
+            raise KeyError("Quiz data has no key 'type' field!")
 
         quiz_type_as_string = quiz_data["type"]
         if quiz_type_as_string not in plugin_manager.all_activated_quiz_types:
@@ -199,7 +207,6 @@ def execute_quiz_as_cli_from_quiz_file(quiz_file_path, plugin_manager):
         quiz_clis_and_models.append((model, cli))
 
         logger.debug(f"Loaded model and cli for quiz type {quiz_type_as_string}.")
-
 
     right_tries = 0
     print(f"Welcome to {quiz_name!r}!\nPlease answer the following questions!\n")
