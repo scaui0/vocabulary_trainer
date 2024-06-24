@@ -14,7 +14,7 @@ class BoolModel(BaseModel):
 
     @property
     def is_right(self):
-        return self.selection == self.right
+        return self.selection == self.right, 1
 
 
 @bool_quiz_type.cli

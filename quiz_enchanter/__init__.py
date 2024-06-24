@@ -1,7 +1,9 @@
 import json
 import logging
+import random
 from importlib.util import spec_from_file_location, module_from_spec
 from pathlib import Path
+
 
 CURRENT_PATH = Path(__file__).parent
 
@@ -30,14 +32,19 @@ class NotRegisteredError(BaseException):
         return f"{self.type_} {self.thing!r} is not registered!"
 
 
-class BaseModel:  # It's redundant, maybe remove it in later versions?
+class BaseModel:
     @property
     def is_right(self):
         return True
 
 
 def base_cli():
-    return True
+    """
+    The default CLI for quizzes
+
+    Returns a tuple of two ints: the reached points and the maximal points
+    """
+    return 0, 0
 
 
 class DictModel(dict, BaseModel):
@@ -181,18 +188,80 @@ class PluginManager:
         return Plugin.GLOBAL_PLUGINS[plugin_id]  # The Plugin is already registered. It registers itself on creation
 
 
-def execute_quiz_as_cli_from_quiz_file(quiz_file_path, plugin_manager):
-    quiz_file_path = Path(quiz_file_path)
-    if not quiz_file_path.exists():
-        raise FileNotFoundError(f"File {quiz_file_path} doesn't exists!")
+RESPONSES = (
+    ("Perfect! :)", "Keep it up! :)"),
+    ("You can do it better!",),
+    ("You'll learn it!", "Don't give up!", "You'll make it!"),
+    ("Everybody can learn it! You can it too!",)
+)
 
-    with quiz_file_path.open("r", encoding="utf-8") as quiz_file:
+SMILEY_RESPONSES = (
+    (":)",),
+    (":\\", ":/"),
+    (":|",),
+    (":(",)
+)
+
+
+def response_for_points(points, max_points, responses=None):
+    if responses is None:
+        responses = RESPONSES
+
+    if points == max_points:
+        return random.choice(responses[0])
+
+    number_of_different_responses = len(responses[1:]) - 1
+
+    for i, response in enumerate(reversed(responses[1:])):
+        max_points_for_this_response = (max_points // number_of_different_responses) * i
+        if points <= max_points_for_this_response:
+            return random.choice(response)
+
+
+def execute_quiz_as_cli_from_quiz_file(main_path):
+    main_path = Path(main_path)
+    plugin_folders = [CURRENT_PATH / "extensions/default_extension"]
+
+    if main_path.is_dir():
+        path_to_quiz_file = main_path / "quiz.json"
+
+        plugin_main_path = main_path / "plugins"
+        if plugin_main_path.exists():
+            plugin_folders += plugin_main_path.iterdir()
+    else:
+        path_to_quiz_file = main_path
+
+    plugin_manager = PluginManager()
+
+    for plugin_path in plugin_folders:
+        plugin_manager.add_plugin(
+            PluginManager.plugin_from_main_folder(plugin_path),
+            activate=True
+        )
+
+    if not path_to_quiz_file.exists():
+        print(f"No quiz found at {path_to_quiz_file}!")
+        logger.error(f"No quiz found at {path_to_quiz_file}!")
+        return
+
+    if not path_to_quiz_file.exists():
+        raise FileNotFoundError(f"File {path_to_quiz_file} doesn't exists!")
+
+    with path_to_quiz_file.open("r", encoding="utf-8") as quiz_file:
         quiz_config = json.load(quiz_file)
 
-    quiz_name = quiz_config["name"]
+    execute_quiz_as_cli(quiz_config, plugin_manager)
+
+
+def execute_quiz_as_cli(json_data, plugin_manager,
+                        show_rating_at_end=True, show_total=True,
+                        show_rating_after_answer=True, show_points_after_answer=True,
+                        use_right_wrong_rating_on_true_false_questions=True,
+                        show_rating_on_empty_questions=False, print_greeting=True):
+    quiz_name = json_data["name"]
 
     quiz_clis_and_models = []
-    for quiz_data in quiz_config["quizzes"]:
+    for quiz_data in json_data["quizzes"]:
         if "type" not in quiz_data:
             raise KeyError("Quiz data has no key 'type' field!")
 
@@ -208,39 +277,43 @@ def execute_quiz_as_cli_from_quiz_file(quiz_file_path, plugin_manager):
 
         logger.debug(f"Loaded model and cli for quiz type {quiz_type_as_string}.")
 
-    right_tries = 0
-    print(f"Welcome to {quiz_name!r}!\nPlease answer the following questions!\n")
-    for model, cli in quiz_clis_and_models:
-        is_right = cli(model)
-        right_tries += is_right
+    if print_greeting:
+        print(f"Welcome to {quiz_name!r}!\nPlease answer the following questions!\n")
 
-        print("That's right!" if is_right else "That's wrong! :(")
+    reached_points = 0
+    max_points = 0
+    for model, cli in quiz_clis_and_models:
+
+        reached_points_for_quiz, max_points_for_quiz = cli(model)
+
+        reached_points += reached_points_for_quiz
+        max_points += max_points_for_quiz
+
+        if (reached_points_for_quiz in (0, 1) and max_points_for_quiz == 1
+                and use_right_wrong_rating_on_true_false_questions):
+            print("That's right! :)" if reached_points_for_quiz else "That's wrong! :(")
+
+        elif reached_points_for_quiz == 0 and max_points_for_quiz == 0 and not show_rating_on_empty_questions:
+            pass
+        else:
+            print(
+                response_for_points(
+                    reached_points_for_quiz, max_points_for_quiz, SMILEY_RESPONSES
+                ) if show_rating_after_answer else "",
+                f"{reached_points_for_quiz}/{max_points_for_quiz}" if show_points_after_answer else ""
+            )
+
         print()
 
-    print(f"Total: {int(right_tries / len(quiz_clis_and_models) * 100)}% {right_tries}/{len(quiz_clis_and_models)}")
+    try:
+        percent = reached_points / max_points * 100
+    except ZeroDivisionError:
+        percent = 100
 
+    if show_rating_at_end:
+        print(response_for_points(reached_points, max_points))
 
-def execute_quiz_as_cli(path):
-    file = Path(path)
-    plugin_folders = [CURRENT_PATH / "extensions/default_extension"]
+    if show_total:
+        print(f"Total: {int(percent)}% {reached_points}/{max_points}")
 
-    if file.is_dir():
-        quiz_path = file / "quiz.json"
-
-        plugin_main_path = file / "plugins"
-        if plugin_main_path.exists():
-            plugin_folders += plugin_main_path.iterdir()
-    else:
-        quiz_path = file
-
-    plugin_manager = PluginManager()
-    for plugin_path in plugin_folders:
-        plugin_manager.add_plugin(
-            PluginManager.plugin_from_main_folder(plugin_path),
-            activate=True
-        )
-
-    if quiz_path.exists():
-        execute_quiz_as_cli_from_quiz_file(quiz_path, plugin_manager)
-    else:
-        print(f"No quiz found at {quiz_path}!")
+    return reached_points, max_points, percent

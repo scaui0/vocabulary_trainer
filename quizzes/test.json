@@ -28,6 +28,10 @@
       "question": "How looks a three-day period in ISO 8601?",
       "right": "P3D",
       "show_format_information": false
+    },
+    {
+      "type": "message",
+      "message": "This is a message!"
     }
   ]
 }

@@ -3,6 +3,7 @@ import re
 
 from quiz_enchanter import Plugin, BaseModel
 
+
 plugin = Plugin.get_plugin("default")
 match_quiz_type = plugin.quiz_type("match", "Match")
 
@@ -59,9 +60,7 @@ class MatchModel(BaseModel):
         else:
             matches_regex = True
 
-        return matches_regex and in_right
-
-
+        return matches_regex and in_right, 1
 
 
 @match_quiz_type.cli

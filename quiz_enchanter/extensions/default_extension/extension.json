@@ -6,6 +6,7 @@
     "select_extension.py",
     "bool_extension.py",
     "date_extension.py",
-    "timeperiod_extension.py"
+    "timeperiod_extension.py",
+    "message_extension.py"
   ]
 }

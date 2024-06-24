@@ -27,6 +27,10 @@
       "type": "timeperiod",
       "question": "How long is the period between St. Nicholas and Christmas?",
       "right": ["P18D", "P19D"]
+    },
+    {
+      "type": "message",
+      "message": "This is a message!"
     }
   ]
 }

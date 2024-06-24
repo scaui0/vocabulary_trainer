@@ -17,7 +17,7 @@ class SelectModel(BaseModel):
 
     @property
     def is_right(self):
-        return self.selection in self.right
+        return self.selection in self.right, 1
 
 
 @select_quiz_type.cli
