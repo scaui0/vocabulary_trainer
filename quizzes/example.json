@@ -14,6 +14,11 @@
       "ignore_case": true
     },
     {
+      "type": "match",
+      "question": "English or German greeting, beginning with 'h'?",
+      "regex": "(?i)h[ae]llo"
+    },
+    {
       "type": "bool",
       "question": "Mount Everest is the highest mountain on Earth.",
       "right": true

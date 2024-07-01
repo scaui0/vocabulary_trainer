@@ -1,5 +1,30 @@
 # QuizEnchanter
 
+## Contents
+* [General Information](#general-information)
+  * [Fun Fact](#fun-fact)
+  * [Author](#author)
+* [Installation](#installation)
+* [Command-Line Interface](#command-line-interface)
+  * [Examples](#examples)
+    * [Without Arguments](#without-arguments)
+    * [With Arguments](#with-arguments)
+    * [Debug Messages](#debug-messages)
+* [Create Quiz Files](#create-quiz-files)
+* [Builtin QUiz Types](#builtin-quiz-types)
+  * [Short Descriptions](#short-descriptions)
+  * [Long Description](#long-descriptions)
+    * [Select](#select)
+    * [Match](#match)
+    * [Bool](#bool)
+    * [Datetime](#datetime)
+    * [Timeperiod](#timeperiod)
+    * [Message](#message)
+* [Plugin Development](#plugin-development)
+  * [The Model](#the-model)
+  * [The CLI](#the-cli)
+  * [An Example Plugin](#an-example-plugin)
+
 ## General Information
 * Version: 1.0
 
@@ -11,6 +36,7 @@
 
 ### Author
 _Scaui ([scaui0 on GitHub](https://www.github.com/scaui0)) is the developer of this project.
+
 
 ## Installation
 1. Open [QuizEnchanter on GitHub](https://www.github.com/scaui0/QuizEnchanter) in your favorite browser.
@@ -65,7 +91,7 @@ If you don't want to insert the quiz's name after starting the program, you can 
 When the file is set, the program will launch it.
 The file must be an absolute path to a quiz file.
 
-`python QuizEnchanter.py C:/Users/Scaui/Desktop/quiz.json`:
+`python QuizEnchanter.py C:/Users/<USERNAME>/Desktop/quiz.json`:
 ```
 Welcome to 'Test Quizzes'!
 Please answer the following questions!
@@ -76,7 +102,20 @@ Please answer the following questions!
 If you want to see debug messages, you can use the `--debug` argument flag. If it is set, the program will give more output.
 `python QuizEnchanter.py --debug`
 ```
+Quiz file (in quizzes folder): test.json
+[INFO][2024-07-01 16:29:49](__main__) - Loaded quiz file from C:\Users\<USERNAME>\PycharmProjects\QuizEnchanter\quizzes\test.json
+[DEBUG][2024-07-01 16:29:49](quiz_enchanter) - Loaded model and cli for quiz type match.
+[DEBUG][2024-07-01 16:29:49](quiz_enchanter) - Loaded model and cli for quiz type bool.
+[DEBUG][2024-07-01 16:29:49](quiz_enchanter) - Loaded model and cli for quiz type select.
+[DEBUG][2024-07-01 16:29:49](quiz_enchanter) - Loaded model and cli for quiz type datetime.
+[DEBUG][2024-07-01 16:29:49](quiz_enchanter) - Loaded model and cli for quiz type timeperiod.
+[DEBUG][2024-07-01 16:29:49](quiz_enchanter) - Loaded model and cli for quiz type message.
+Welcome to 'Test Quizzes'!
+Please answer the following questions!
 
+Please answer 'HI'!
+Answer: HI
+...
 ```
 
 
@@ -312,11 +351,12 @@ Here is a step-by-step guide:
 3. Copy the following template inside a new `extension.json` file, which is in the main folder:
     ```json
     {
-      "name": "",
       "id": "",
       "files": []
     }
     ```
+   
+   The `files` field is a list of python files (relativ from plugin folder) that are executed on loading plugin.
 4. Fill the name and the id. The id should be unique!
 5. Create a new python file in the main folder and specify it in the `file` field of the `extension.json` file.
 6. Fill the referenced Python files with your plugin content!
@@ -333,7 +373,7 @@ Here is a step-by-step guide:
    you can use `Plugin.get_plugin("id")`, where id is your plugin's id.
    
    There are two ways to register quiz types:
-   * Use decorators.
+   * Create quiz types and use their decorators.
     `quiz_type = plugin.quiz_type("id", "Name")` creates an empty quiz type.
     To register model or command-line interfaces, use their decorators.
     They are called `model` and `cli`.
@@ -341,19 +381,33 @@ Here is a step-by-step guide:
    
    * The other way is to use `plugin.register_quiz_type(id, name, model, cli)`.
 
-   After registration, you can use your quiz type in quiz files.
-   Set the `type` to your quiz type's id and fill the other parameters for your quiz type.
-   All parameters are passed to your model.
-   
-   The model class is a class inhered by `BaseModel` and its `__init__` expects one argument:
-   a `dict` filled with information from the quiz file.
-   The model should define a property called `is_right`.
-   Otherwise, the model is always right.
-   You don't have to define a model class.
-   If you don't, the `cli`'s `model` parameter will be a dict, filled with information from the JSON file.
-   
-   The `cli` function expects one argument `model` and return a boolean,
-   which indicates whether the result is correct.
+
+
+### The Model
+The model is the manager for user input.
+It manages whether the user's answer is right and how many points he got.
+
+Methods:
+* `__init__`: It expects one argument: a dict filled with the quiz json data from the quiz file. 
+  Default is 0, 0.
+* `property is_right`: Returns a tuple of two ints: The reached points and the max points the user could reach.
+  It shouldn't get user inputs!
+
+If you don't create a model class, the `cli`'s `model` parameter will be a dict, 
+filled with information from the JSON file.
+
+### The CLI
+The CLI gets input from the user using `print`s and `inputs`s.
+The CLI shouldn't print whether the user's input is right!
+
+Arguments:
+* `model`: The model, already initialized with the quiz json data.
+
+Returns a tuple of two ints: The reached points and the max points the user could reach.
+
+
+After registration, you can use your quiz type in quiz files.
+Set the `type` to your quiz type's id and fill the other parameters for your quiz type.
 
 
 ### An Example Plugin
@@ -385,15 +439,19 @@ example_quiz_type = plugin.quiz_type("example", "Example quiz type")
 
 @example_quiz_type.model
 class ExampleModel(BaseModel):
-   def __init__(self, json_data):
-      self.question = json_data["question"]
-   
-   
+    def __init__(self, json_data):
+        self.question = json_data["question"]
+        
+    @property
+    def is_right(self):
+        return 1, 1
+
+
 @example_quiz_type.cli
 def run(model):
     input(model.question)
 
-    return True
+    return model.is_right
 ```
 
 To test our plugin, we need to create a quiz file.
@@ -403,6 +461,6 @@ The quiz file must be named `quiz.json`.
 
 Next to `quiz.json`, we need to create a folder `plugins` and place our plugin inside it.
 Then start the QuizEnchanter.py and write `example`!
-
+[workspace.xml](.idea%2Fworkspace.xml)
 If you want, create more complex quizzes and plugins!
 Good luck!

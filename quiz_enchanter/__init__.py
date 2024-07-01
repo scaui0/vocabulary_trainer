@@ -34,20 +34,20 @@ class NotRegisteredError(BaseException):
 
 class BaseModel:
     @property
-    def is_right(self):
-        return True
+    def is_right(self):  # TODO: Maybe use is_right(user_input) instead?
+        return 0, 0
 
 
-def base_cli():
+def base_cli(model):
     """
     The default CLI for quizzes
 
-    Returns a tuple of two ints: the reached points and the maximal points
+    Returns a tuple of two ints: the reached points and the maximal points the user could reach
     """
     return 0, 0
 
 
-class DictModel(dict, BaseModel):
+class DictModel(dict, BaseModel):  # TODO: Why is it there?
     pass
 
 
