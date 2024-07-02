@@ -1,4 +1,5 @@
 # QuizEnchanter
+A dynamic quiz programm that loads quizzes from quiz files!
 
 ## Contents
 * [General Information](#general-information)
@@ -401,7 +402,7 @@ The CLI gets input from the user using `print`s and `inputs`s.
 The CLI shouldn't print whether the user's input is right!
 
 Arguments:
-* `model`: The model, already initialized with the quiz json data.
+* `model`: The model, already initialised with the quiz json data.
 
 Returns a tuple of two ints: The reached points and the max points the user could reach.
 
@@ -452,6 +453,7 @@ def run(model):
     input(model.question)
 
     return model.is_right
+
 ```
 
 To test our plugin, we need to create a quiz file.
@@ -461,6 +463,5 @@ The quiz file must be named `quiz.json`.
 
 Next to `quiz.json`, we need to create a folder `plugins` and place our plugin inside it.
 Then start the QuizEnchanter.py and write `example`!
-[workspace.xml](.idea%2Fworkspace.xml)
 If you want, create more complex quizzes and plugins!
 Good luck!

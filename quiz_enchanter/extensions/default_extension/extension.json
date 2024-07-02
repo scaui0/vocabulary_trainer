@@ -1,4 +1,5 @@
 {
+  "name": "default",
   "id": "default",
   "files": [
     "extension.py",
